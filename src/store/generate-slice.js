@@ -3,15 +3,20 @@ import { createSlice } from "@reduxjs/toolkit";
 const generateSlice = createSlice({
   name: "generate",
   initialState: {
-    selectedVideos: [],
+    selectedPhotos: [],
+    photoThumbnail: [],
   },
   reducers: {
-    addVideoToList(state, action) {
+    updatePhotoThumbnail(state, action) {
+      const loadedPictures = action.payload;
+      state.photoThumbnail = state.photoThumbnail.concat(loadedPictures);
+    },
+    addPhotoToList(state, action) {
       const newVideo = action.payload;
 
-      state.selectedVideos = state.selectedVideos.concat(newVideo);
+      state.selectedPhotos = state.selectedPhotos.concat(newVideo);
     },
-    removeVideoFromList(state, action) {},
+    removePhotoFromList(state, action) {},
   },
 });
 

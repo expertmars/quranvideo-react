@@ -9,7 +9,6 @@ const Form = (props) => {
   const toAyahRef = useRef(24);
   const recitorRef = useRef("Mishary Al Fasi");
   const translationRef = useRef();
-  const fileRef = useRef();
   const resolutionRef = useRef();
   const englishMeaningRef = useRef();
   const translationMeaningRef = useRef();

@@ -4,10 +4,9 @@ import { uiActions } from "../../store/ui-slice";
 import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
+import { fetchGenerateData } from "../../store/generate-actions";
 
 const GenerateForm = () => {
-  const [videoThumbnail, setVideoThumbnail] = useState([]);
-
   const dispatch = useDispatch();
   const showFileChoose = useSelector((state) => state.ui.fileChooseIsVisible);
 
@@ -19,45 +18,13 @@ const GenerateForm = () => {
     dispatch(uiActions.hideFileChoose());
   };
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await fetch("https://api.pexels.com/v1/search?query=nature&per_page=15", {
-        headers: {
-          Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
-        },
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("Could not fetch generate data!");
-      }
-
-      const data = await response.json().then((data) => data.photos);
-
-      console.log(data);
-
-      const loadedPictures = [];
-
-      for (const key in data) {
-        loadedPictures.push({
-          id: key,
-          photo: data[key].src.large,
-        });
-      }
-      setVideoThumbnail(loadedPictures);
-      console.log(loadedPictures);
-    } catch {
-      throw new Error("Failed to connect! Something went wrong!");
-    }
-  }, []);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    dispatch(fetchGenerateData());
+  }, []);
 
   return (
     <React.Fragment>
-      {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} videoPicture={videoThumbnail} />}
+      {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
       <div className="editor">
         <div className="col-1-of-4">
           <FreeEditorForm formChooseFileHandler={showChooseFile} />

@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
-  const selectedVideos = useSelector((state) => state.generate.selectedVideos);
+  const videoThumbnail = useSelector((state) => state.generate.photoThumbnail);
+  const selectedVideos = useSelector((state) => state.generate.selectedPhotos);
 
-  const videoClickHandler = (e) => {
-    dispatch(generateActions.addVideoToList(e.target.src));
+  const photoClickHandler = (e) => {
+    dispatch(generateActions.addPhotoToList(e.target.src));
   };
   // 15 photo  15 / 3 = 5
 
-  const photoCount = props.videoPicture.length;
+  const photoCount = videoThumbnail.length;
   const photoPerCol = photoCount / 3; // 5
 
   let col1 = [];
@@ -21,17 +22,13 @@ const ChooseVideoCard = (props) => {
 
   for (let i = 0; i < photoCount; i++) {
     if (col1.length < photoPerCol) {
-      col1.push(props.videoPicture[i]);
+      col1.push(videoThumbnail[i]);
     } else if (col2.length < photoPerCol) {
-      col2.push(props.videoPicture[i]);
+      col2.push(videoThumbnail[i]);
     } else {
-      col3.push(props.videoPicture[i]);
+      col3.push(videoThumbnail[i]);
     }
   }
-
-  console.log(col1);
-  console.log(col2);
-  console.log(col3);
 
   return (
     <Modal onClose={props.onClose}>
@@ -69,17 +66,17 @@ const ChooseVideoCard = (props) => {
           <div className="row">
             <div className="column">
               {col1.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={videoClickHandler} />
+                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
               ))}
             </div>
             <div className="column">
               {col2.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={videoClickHandler} />
+                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
               ))}
             </div>
             <div className="column">
               {col3.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={videoClickHandler} />
+                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
               ))}
             </div>
           </div>
