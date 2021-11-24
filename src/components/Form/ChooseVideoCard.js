@@ -7,13 +7,22 @@ import { uiActions } from "../../store/ui-slice";
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
   const photoThumbnail = useSelector((state) => state.generate.photoThumbnail);
-  const selectedPhotos = useSelector((state) => state.generate.selectedPhotos);
+  const generatedVideos = useSelector((state) => state.generate.generatedVideos);
+
+  const selectedPhotos = useSelector((state) => state.generate.selectedPhoto);
+  const selectedVideos = useSelector((state) => state.generate.selectedVideo);
 
   const showChooseVideo = useSelector((state) => state.ui.chooseVideoIsVisible);
   const showChoosePhoto = useSelector((state) => state.ui.choosePhotoIsVisible);
 
+  // const videoPhotoMerged = selectedVideos.concat(selectedPhotos);
+
   const photoClickHandler = (e) => {
     dispatch(generateActions.addPhotoToList(e.target.src));
+  };
+
+  const videoClickHandler = (videoArray) => {
+    dispatch(generateActions.addVideoToList(videoArray));
   };
 
   const choosePhotoClickHandler = (e) => {
@@ -26,24 +35,52 @@ const ChooseVideoCard = (props) => {
     dispatch(uiActions.showChooseVideo());
   };
 
-  // 15 photo  15 / 3 = 5
-
+  // Photo Column - 15 photo  (15 / 3 = 5)
   const photoCount = photoThumbnail.length;
   const photoPerCol = photoCount / 3; // 5
 
-  let col1 = [];
-  let col2 = [];
-  let col3 = [];
+  let photoCol1 = [];
+  let photoCol2 = [];
+  let photoCol3 = [];
 
   for (let i = 0; i < photoCount; i++) {
-    if (col1.length < photoPerCol) {
-      col1.push(photoThumbnail[i]);
-    } else if (col2.length < photoPerCol) {
-      col2.push(photoThumbnail[i]);
+    if (photoCol1.length < photoPerCol) {
+      photoCol1.push(photoThumbnail[i]);
+    } else if (photoCol2.length < photoPerCol) {
+      photoCol2.push(photoThumbnail[i]);
     } else {
-      col3.push(photoThumbnail[i]);
+      photoCol3.push(photoThumbnail[i]);
     }
   }
+
+  // Video Column - 15 photo (15 / 3 = 5)
+  const videoCount = generatedVideos.length;
+  const videoPerCol = videoCount / 3; // 5
+
+  let videoCol1 = [];
+  let videoCol2 = [];
+  let videoCol3 = [];
+
+  for (let i = 0; i < videoCount; i++) {
+    if (videoCol1.length < videoPerCol) {
+      videoCol1.push(generatedVideos[i]);
+    } else if (videoCol2.length < videoPerCol) {
+      videoCol2.push(generatedVideos[i]);
+    } else {
+      videoCol3.push(generatedVideos[i]);
+    }
+  }
+
+  // Duration for video
+  const timeConvert = (duration) => {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    if (seconds < 10) {
+      return `${minutes}:0${seconds}`;
+    }
+
+    return `${minutes}:${seconds}`;
+  };
 
   return (
     <Modal onClose={props.onClose}>
@@ -87,7 +124,36 @@ const ChooseVideoCard = (props) => {
         {showChooseVideo && (
           <div className="videopopup__row-grid">
             <div className="row">
-              <div className="column"> "No Videos!"</div>
+              <div className="column">
+                {videoCol1.map((videoArray) => (
+                  <img
+                    src={videoArray.thumbnail}
+                    alt="videoPopup_video"
+                    style={{ width: "100%" }}
+                    onClick={() => videoClickHandler(videoArray)}
+                  />
+                ))}
+              </div>
+              <div className="column">
+                {videoCol2.map((videoArray) => (
+                  <img
+                    src={videoArray.thumbnail}
+                    alt="videoPopup_video"
+                    style={{ width: "100%" }}
+                    onClick={() => videoClickHandler(videoArray)}
+                  />
+                ))}
+              </div>
+              <div className="column">
+                {videoCol3.map((videoArray) => (
+                  <img
+                    src={videoArray.thumbnail}
+                    alt="videoPopup_video"
+                    style={{ width: "100%" }}
+                    onClick={() => videoClickHandler(videoArray)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -99,7 +165,7 @@ const ChooseVideoCard = (props) => {
               <div className="column">
                 <div className="row">
                   <div className="column">
-                    {col1.map((img) => (
+                    {photoCol1.map((img) => (
                       <img
                         src={img.photo}
                         alt="videoPopup_video"
@@ -109,7 +175,7 @@ const ChooseVideoCard = (props) => {
                     ))}
                   </div>
                   <div className="column">
-                    {col2.map((img) => (
+                    {photoCol2.map((img) => (
                       <img
                         src={img.photo}
                         alt="videoPopup_video"
@@ -119,7 +185,7 @@ const ChooseVideoCard = (props) => {
                     ))}
                   </div>
                   <div className="column">
-                    {col3.map((img) => (
+                    {photoCol3.map((img) => (
                       <img
                         src={img.photo}
                         alt="videoPopup_video"
@@ -143,6 +209,17 @@ const ChooseVideoCard = (props) => {
               {" "}
               <h3 className="selectedvideo__name">{img.split("w3images/")[1]}</h3>
               <p className="selectedvideo__len">01:30</p>
+            </div>
+            <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
+          </div> // sdds
+        ))}
+        {selectedVideos.map((videoArray) => (
+          <div className="selectedvideo">
+            <img src={videoArray.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
+            <div className="selectedvideo__left">
+              {" "}
+              <h3 className="selectedvideo__name">video-sample</h3>
+              <p className="selectedvideo__len">{timeConvert(videoArray.duration)}</p>
             </div>
             <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
           </div> // sdds

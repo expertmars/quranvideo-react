@@ -4,7 +4,7 @@ import { uiActions } from "../../store/ui-slice";
 import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
-import { fetchGenerateData } from "../../store/generate-actions";
+import { fetchPhotoData, fetchVideoData } from "../../store/generate-actions";
 
 const GenerateForm = () => {
   const dispatch = useDispatch();
@@ -19,8 +19,9 @@ const GenerateForm = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchGenerateData());
-  }, []);
+    dispatch(fetchPhotoData());
+    dispatch(fetchVideoData());
+  }, [dispatch]);
 
   return (
     <React.Fragment>
