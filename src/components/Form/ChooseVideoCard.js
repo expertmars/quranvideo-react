@@ -2,18 +2,33 @@ import React, { useState } from "react";
 import Modal from "../UI/Modal";
 import { generateActions } from "../../store/generate-slice";
 import { useDispatch, useSelector } from "react-redux";
+import { uiActions } from "../../store/ui-slice";
 
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
-  const videoThumbnail = useSelector((state) => state.generate.photoThumbnail);
-  const selectedVideos = useSelector((state) => state.generate.selectedPhotos);
+  const photoThumbnail = useSelector((state) => state.generate.photoThumbnail);
+  const selectedPhotos = useSelector((state) => state.generate.selectedPhotos);
+
+  const showChooseVideo = useSelector((state) => state.ui.chooseVideoIsVisible);
+  const showChoosePhoto = useSelector((state) => state.ui.choosePhotoIsVisible);
 
   const photoClickHandler = (e) => {
     dispatch(generateActions.addPhotoToList(e.target.src));
   };
+
+  const choosePhotoClickHandler = (e) => {
+    dispatch(uiActions.hideChooseVideo());
+    dispatch(uiActions.showChoosePhoto());
+  };
+
+  const chooseVideoClickHandler = (e) => {
+    dispatch(uiActions.hideChoosePhoto());
+    dispatch(uiActions.showChooseVideo());
+  };
+
   // 15 photo  15 / 3 = 5
 
-  const photoCount = videoThumbnail.length;
+  const photoCount = photoThumbnail.length;
   const photoPerCol = photoCount / 3; // 5
 
   let col1 = [];
@@ -22,21 +37,27 @@ const ChooseVideoCard = (props) => {
 
   for (let i = 0; i < photoCount; i++) {
     if (col1.length < photoPerCol) {
-      col1.push(videoThumbnail[i]);
+      col1.push(photoThumbnail[i]);
     } else if (col2.length < photoPerCol) {
-      col2.push(videoThumbnail[i]);
+      col2.push(photoThumbnail[i]);
     } else {
-      col3.push(videoThumbnail[i]);
+      col3.push(photoThumbnail[i]);
     }
   }
 
   return (
     <Modal onClose={props.onClose}>
       <div className="videopopup__row">
-        <a href="#" className="videopopup__tab videopopup__tab--active">
+        <a
+          href="#"
+          onClick={chooseVideoClickHandler}
+          className={`videopopup__tab ${showChooseVideo && `videopopup__tab--active`}`}>
           Choose Video
         </a>
-        <a href="#" className="videopopup__tab">
+        <a
+          href="#"
+          onClick={choosePhotoClickHandler}
+          className={`videopopup__tab ${showChoosePhoto && `videopopup__tab--active`}`}>
           Choose Photo
         </a>
         <a href="#" className="videopopup__tab">
@@ -62,28 +83,60 @@ const ChooseVideoCard = (props) => {
         <input type="text" placeholder="Search assets" className="videopopup__search" />
       </div>
       <div className="videopopup__row">
-        <div className="videopopup__row-grid">
-          <div className="row">
-            <div className="column">
-              {col1.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
-              ))}
-            </div>
-            <div className="column">
-              {col2.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
-              ))}
-            </div>
-            <div className="column">
-              {col3.map((img) => (
-                <img src={img.photo} alt="videoPopup_video" style={{ width: "100%" }} onClick={photoClickHandler} />
-              ))}
+        {/* Choose Video Section */}
+        {showChooseVideo && (
+          <div className="videopopup__row-grid">
+            <div className="row">
+              <div className="column"> "No Videos!"</div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Choose Photos Section */}
+        {showChoosePhoto && (
+          <div className="videopopup__row-grid">
+            <div className="row">
+              <div className="column">
+                <div className="row">
+                  <div className="column">
+                    {col1.map((img) => (
+                      <img
+                        src={img.photo}
+                        alt="videoPopup_video"
+                        style={{ width: "100%" }}
+                        onClick={photoClickHandler}
+                      />
+                    ))}
+                  </div>
+                  <div className="column">
+                    {col2.map((img) => (
+                      <img
+                        src={img.photo}
+                        alt="videoPopup_video"
+                        style={{ width: "100%" }}
+                        onClick={photoClickHandler}
+                      />
+                    ))}
+                  </div>
+                  <div className="column">
+                    {col3.map((img) => (
+                      <img
+                        src={img.photo}
+                        alt="videoPopup_video"
+                        style={{ width: "100%" }}
+                        onClick={photoClickHandler}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Choose Photos Section - END */}
       </div>
       <div className="videopopup__row">
-        {selectedVideos.map((img) => (
+        {selectedPhotos.map((img) => (
           <div className="selectedvideo">
             <img src={img} key={img} alt="videoPopup_video" className="selectedvideo__thumb" />
             <div className="selectedvideo__left">
