@@ -4,6 +4,8 @@ import { generateActions } from "../../store/generate-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "../../store/ui-slice";
 
+import { Player } from "video-react";
+
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
   const photoThumbnail = useSelector((state) => state.generate.photoThumbnail);
@@ -82,6 +84,19 @@ const ChooseVideoCard = (props) => {
     return `${minutes}:${seconds}`;
   };
 
+  // Video preview
+  const mouseOverHandler = (e) => {
+    const playPromise = e.currentTarget.play();
+
+    if (playPromise !== undefined) {
+      playPromise.then((_) => {}).catch((error) => {});
+    }
+  };
+
+  const mouseOutHandler = (e) => {
+    e.currentTarget.pause();
+  };
+
   return (
     <Modal onClose={props.onClose}>
       <div className="videopopup__row">
@@ -126,12 +141,14 @@ const ChooseVideoCard = (props) => {
             <div className="row">
               <div className="column">
                 {videoCol1.map((videoArray) => (
-                  <img
-                    src={videoArray.thumbnail}
-                    alt="videoPopup_video"
-                    style={{ width: "100%" }}
-                    onClick={() => videoClickHandler(videoArray)}
-                  />
+                  <>
+                    <img
+                      src={videoArray.thumbnail}
+                      alt="videoPopup_video"
+                      style={{ width: "100%" }}
+                      onClick={() => videoClickHandler(videoArray)}
+                    />
+                  </>
                 ))}
               </div>
               <div className="column">
