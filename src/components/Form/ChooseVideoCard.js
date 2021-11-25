@@ -97,6 +97,11 @@ const ChooseVideoCard = (props) => {
     e.currentTarget.pause();
   };
 
+  // Load More (Pagination)
+  const loadMoreButtonHandler = () => {
+    dispatch(generateActions.updateNextPageVideoData());
+  };
+
   return (
     <Modal onClose={props.onClose}>
       <div className="videopopup__row">
@@ -171,6 +176,7 @@ const ChooseVideoCard = (props) => {
                   />
                 ))}
               </div>
+              <button onClick={loadMoreButtonHandler}>Load more!</button>
             </div>
           </div>
         )}

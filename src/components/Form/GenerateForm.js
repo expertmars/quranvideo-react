@@ -4,11 +4,12 @@ import { uiActions } from "../../store/ui-slice";
 import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
-import { fetchPhotoData, fetchVideoData, fetchMoreVideoData } from "../../store/generate-actions";
+import { fetchPhotoData, fetchVideoData, fetchNewVideoData } from "../../store/generate-actions";
 
 const GenerateForm = () => {
   const dispatch = useDispatch();
   const showFileChoose = useSelector((state) => state.ui.fileChooseIsVisible);
+  const nextPageData = useSelector((state) => state.generate.nextPageData);
 
   const showChooseFile = () => {
     dispatch(uiActions.showFileChoose());
@@ -20,9 +21,8 @@ const GenerateForm = () => {
 
   useEffect(() => {
     dispatch(fetchPhotoData());
-    dispatch(fetchVideoData());
-    dispatch(fetchMoreVideoData());
-  }, [dispatch]);
+    dispatch(fetchVideoData(nextPageData));
+  }, [nextPageData]);
 
   return (
     <React.Fragment>

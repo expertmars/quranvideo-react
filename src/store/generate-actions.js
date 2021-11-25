@@ -40,10 +40,10 @@ export const fetchPhotoData = () => {
   };
 };
 
-export const fetchVideoData = () => {
+export const fetchVideoData = (fetchURL) => {
   return async (dispatch) => {
     const fetchVideo = async () => {
-      const response = await fetch("https://api.pexels.com/videos/search?query=nature&per_page=15", {
+      const response = await fetch(fetchURL, {
         headers: {
           Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
         },
@@ -54,13 +54,20 @@ export const fetchVideoData = () => {
         throw new Error("Could not react to the server for fetching video data.");
       }
 
-      const data = response.json().then((data) => data.videos);
+      const data = response.json();
+      const nextPageData = data.then((data) => data.next_page);
+      const videoData = data.then((data) => data.videos);
 
-      return data;
+      return {
+        videoData: videoData,
+        nextPageData: nextPageData,
+        data: data,
+      };
     };
 
     try {
-      const generateVideo = await fetchVideo();
+      const generateVideo = await (await fetchVideo()).videoData;
+      const generateNextPageVideos = await (await fetchVideo()).nextPageData;
       console.log(generateVideo);
       const loadedVideos = [];
 
@@ -72,18 +79,18 @@ export const fetchVideoData = () => {
           videoURL: generateVideo[key].url,
         });
       }
+      dispatch(generateActions.storeNextPageVideoData(generateNextPageVideos));
       dispatch(generateActions.updateGeneratedVideos(loadedVideos));
-      console.log(loadedVideos);
     } catch {
       throw new Error("Something went wrong on fetching video data!");
     }
   };
 };
 
-export const fetchMoreVideoData = () => {
+export const fetchNewVideoData = (fetchURL) => {
   return async (dispatch) => {
-    const fetchMoreVideo = async () => {
-      const response = await fetch("https://api.pexels.com/videos/search?query=nature&per_page=15", {
+    const fetchNewVideo = async () => {
+      const response = await fetch(fetchURL(), {
         headers: {
           Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
         },
@@ -91,19 +98,40 @@ export const fetchMoreVideoData = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Could not react to the server for fetching more video data.");
+        throw new Error("Could not react to the server for fetching video data.");
       }
 
-      const data = response.json().then((data) => data.next_page);
+      const data = response.json();
+      const nextPageData = data.then((data) => data.next_page);
+      const videoData = data.then((data) => data.videos);
 
-      return data;
+      return {
+        videoData: videoData,
+        nextPageData: nextPageData,
+        data: data,
+      };
     };
 
     try {
-      const generateVideo = await fetchMoreVideo();
+      const generateVideo = await (await fetchNewVideo()).videoData;
+      const generateNextPageVideos = await (await fetchNewVideo()).nextPageData;
       console.log(generateVideo);
+      const loadedVideos = [];
+
+      for (const key in generateVideo) {
+        loadedVideos.push({
+          id: key,
+          duration: generateVideo[key].duration,
+          thumbnail: generateVideo[key].image,
+          videoURL: generateVideo[key].url,
+        });
+      }
+      dispatch(generateActions.updateNextPageVideoData(generateNextPageVideos));
+      dispatch(generateActions.updateGeneratedVideos(loadedVideos));
+      console.log(loadedVideos);
+      console.log(generateNextPageVideos);
     } catch {
-      throw new Error("Something went wrong on fetching more video data!");
+      throw new Error("Something went wrong on fetching video data!");
     }
   };
 };
