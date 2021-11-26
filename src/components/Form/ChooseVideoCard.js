@@ -3,6 +3,7 @@ import Modal from "../UI/Modal";
 import { generateActions } from "../../store/generate-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "../../store/ui-slice";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import { Player } from "video-react";
 
@@ -140,7 +141,7 @@ const ChooseVideoCard = (props) => {
         <input type="text" placeholder="Search assets" className="videopopup__search" />
       </div>
       <div className="videopopup__row">
-        {/* Choose Video Section */}
+        {/* 
         {showChooseVideo && (
           <div className="videopopup__row-grid">
             <div className="row">
@@ -179,7 +180,63 @@ const ChooseVideoCard = (props) => {
               <button onClick={loadMoreButtonHandler}>Load more!</button>
             </div>
           </div>
-        )}
+        )} */}
+        <div className="videopopup__row-grid">
+          <InfiniteScroll
+            dataLength={generatedVideos.length}
+            next={loadMoreButtonHandler}
+            hasMore={true}
+            loader={<h4>Loading...</h4>}
+            height={360}
+            scrollThreshold="200px"
+            scrollableTarget="row"
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }>
+            <div className="row">
+              <div className="column">
+                {videoCol1.map((videoArray) => (
+                  <>
+                    <img
+                      src={videoArray.thumbnail}
+                      alt="videoPopup_video"
+                      style={{ width: "100%" }}
+                      onClick={() => videoClickHandler(videoArray)}
+                    />
+                  </>
+                ))}
+              </div>
+
+              <div className="column">
+                {videoCol2.map((videoArray) => (
+                  <>
+                    <img
+                      src={videoArray.thumbnail}
+                      alt="videoPopup_video"
+                      style={{ width: "100%" }}
+                      onClick={() => videoClickHandler(videoArray)}
+                    />
+                  </>
+                ))}
+              </div>
+
+              <div className="column">
+                {videoCol3.map((videoArray) => (
+                  <>
+                    <img
+                      src={videoArray.thumbnail}
+                      alt="videoPopup_video"
+                      style={{ width: "100%" }}
+                      onClick={() => videoClickHandler(videoArray)}
+                    />
+                  </>
+                ))}
+              </div>
+            </div>
+          </InfiniteScroll>
+        </div>
 
         {/* Choose Photos Section */}
         {showChoosePhoto && (

@@ -22,7 +22,7 @@ const GenerateForm = () => {
   useEffect(() => {
     dispatch(fetchPhotoData());
     dispatch(fetchVideoData(nextPageData));
-  }, [nextPageData]);
+  }, [dispatch, nextPageData]);
 
   return (
     <React.Fragment>
