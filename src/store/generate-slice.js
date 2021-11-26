@@ -8,8 +8,9 @@ const generateSlice = createSlice({
 
     photoThumbnail: [],
     generatedVideos: [],
-    storedNextPageData: "",
-    nextPageData: "https://api.pexels.com/videos/search?query=nature&per_page=15",
+
+    videoPage: 1,
+    videoQuery: "nature",
   },
   reducers: {
     // Photo
@@ -26,26 +27,31 @@ const generateSlice = createSlice({
     // Video
     updateGeneratedVideos(state, action) {
       const loadedVideos = action.payload;
-      // state.generatedVideos = state.generatedVideos.concat(loadedVideos);
-      return {
-        ...state,
-        generatedVideos: [...state.generatedVideos, ...loadedVideos],
-      };
+      state.generatedVideos = state.generatedVideos.concat(loadedVideos);
     },
+
     addVideoToList(state, action) {
       const targetVideo = action.payload;
       state.selectedVideo = state.selectedVideo.concat(targetVideo);
     },
 
-    // Next Page
-
-    storeNextPageVideoData(state, action) {
-      const loadedData = action.payload;
-      state.storedNextPageData = loadedData;
+    updateVideoPage(state, action) {
+      state.videoPage++;
     },
-    updateNextPageVideoData(state, action) {
-      state.nextPageData = state.storedNextPageData;
-      console.log(state.nextPageData);
+
+    updateVideoQuery(state, action) {
+      const searchQuery = action.payload;
+      state.videoQuery = searchQuery;
+      console.log(searchQuery);
+      state.generatedVideos = [];
+      state.videoPage = 1;
+    },
+
+    // Misc
+    clearAll(state, action) {
+      state.videoPage = 1;
+      state.videoQuery = "nature";
+      state.generatedVideos = [];
     },
   },
 });

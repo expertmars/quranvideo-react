@@ -98,9 +98,11 @@ const ChooseVideoCard = (props) => {
     e.currentTarget.pause();
   };
 
-  // Load More (Pagination)
-  const loadMoreButtonHandler = () => {
-    dispatch(generateActions.updateNextPageVideoData());
+  // Search
+  const searchVideo = (e) => {
+    if (e.keyCode === 13) {
+      dispatch(generateActions.updateVideoQuery(e.target.value));
+    }
   };
 
   return (
@@ -138,53 +140,18 @@ const ChooseVideoCard = (props) => {
       </div>
       <div className="videopopup__row">
         <img src="https://i.imgur.com/s3KmYLP.png" alt="videoPopup_row" className="videopopup__searchicon" />
-        <input type="text" placeholder="Search assets" className="videopopup__search" />
+        <input
+          type="text"
+          onKeyDown={(e) => searchVideo(e)}
+          placeholder="Search assets"
+          className="videopopup__search"
+        />
       </div>
       <div className="videopopup__row">
-        {/* 
-        {showChooseVideo && (
-          <div className="videopopup__row-grid">
-            <div className="row">
-              <div className="column">
-                {videoCol1.map((videoArray) => (
-                  <>
-                    <img
-                      src={videoArray.thumbnail}
-                      alt="videoPopup_video"
-                      style={{ width: "100%" }}
-                      onClick={() => videoClickHandler(videoArray)}
-                    />
-                  </>
-                ))}
-              </div>
-              <div className="column">
-                {videoCol2.map((videoArray) => (
-                  <img
-                    src={videoArray.thumbnail}
-                    alt="videoPopup_video"
-                    style={{ width: "100%" }}
-                    onClick={() => videoClickHandler(videoArray)}
-                  />
-                ))}
-              </div>
-              <div className="column">
-                {videoCol3.map((videoArray) => (
-                  <img
-                    src={videoArray.thumbnail}
-                    alt="videoPopup_video"
-                    style={{ width: "100%" }}
-                    onClick={() => videoClickHandler(videoArray)}
-                  />
-                ))}
-              </div>
-              <button onClick={loadMoreButtonHandler}>Load more!</button>
-            </div>
-          </div>
-        )} */}
         <div className="videopopup__row-grid">
           <InfiniteScroll
             dataLength={generatedVideos.length}
-            next={loadMoreButtonHandler}
+            next={() => dispatch(generateActions.updateVideoPage())}
             hasMore={true}
             loader={<h4>Loading...</h4>}
             height={360}

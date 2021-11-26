@@ -1,4 +1,5 @@
 import { generateActions } from "./generate-slice";
+import { useSelector } from "react-redux";
 
 export const fetchPhotoData = () => {
   return async (dispatch) => {
@@ -40,49 +41,43 @@ export const fetchPhotoData = () => {
   };
 };
 
-export const fetchVideoData = (fetchURL) => {
+export const fetchVideoData = (videoPage, videoQuery) => {
   return async (dispatch) => {
     const fetchVideo = async () => {
-      const response = await fetch(fetchURL, {
-        headers: {
-          Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
-        },
-        method: "GET",
-      });
+      const response = await fetch(
+        `https://api.pexels.com/videos/search?page=${videoPage}&query=${videoQuery}&per_page=15`,
+        {
+          headers: {
+            Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
+          },
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Could not react to the server for fetching video data.");
       }
 
-      const data = response.json();
-      const nextPageData = data.then((data) => data.next_page);
-      const videoData = data.then((data) => data.videos);
+      const responseData = response
+        .json()
+        .then((data) => data.videos)
+        .then((videoData) => {
+          const loadedVideos = [];
+          for (const key in videoData) {
+            loadedVideos.push({
+              id: videoData[key].id,
+              duration: videoData[key].duration,
+              thumbnail: videoData[key].image,
+              videoURL: videoData[key].url,
+            });
+          }
+          console.log(loadedVideos);
+          dispatch(generateActions.updateGeneratedVideos(loadedVideos));
+        })
+        .catch((error) => console.log(error));
 
-      return {
-        videoData: videoData,
-        nextPageData: nextPageData,
-        data: data,
-      };
+      return responseData;
     };
-
-    try {
-      const generateVideo = await (await fetchVideo()).videoData;
-      const generateNextPageVideos = await (await fetchVideo()).nextPageData;
-      console.log(generateVideo);
-      const loadedVideos = [];
-
-      for (const key in generateVideo) {
-        loadedVideos.push({
-          id: key,
-          duration: generateVideo[key].duration,
-          thumbnail: generateVideo[key].image,
-          videoURL: generateVideo[key].url,
-        });
-      }
-      dispatch(generateActions.storeNextPageVideoData(generateNextPageVideos));
-      dispatch(generateActions.updateGeneratedVideos(loadedVideos));
-    } catch {
-      throw new Error("Something went wrong on fetching video data!");
-    }
+    return fetchVideo();
   };
 };
