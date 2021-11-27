@@ -665,8 +665,14 @@ HTML CSSResult Skip Results Iframe * {
   padding: 0 4px;
 }
 
-.column img {
-  margin-top: 8px;
+.column .content-box {
   vertical-align: middle;
   width: 100%;
+}
+
+.column .content-box video {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  top: 0;
 }

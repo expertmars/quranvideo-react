@@ -60,7 +60,10 @@ export const fetchVideoData = (videoPage, videoQuery) => {
 
       const responseData = response
         .json()
-        .then((data) => data.videos)
+        .then((data) => {
+          console.log(data);
+          return data.videos;
+        })
         .then((videoData) => {
           const loadedVideos = [];
           for (const key in videoData) {
@@ -68,10 +71,9 @@ export const fetchVideoData = (videoPage, videoQuery) => {
               id: videoData[key].id,
               duration: videoData[key].duration,
               thumbnail: videoData[key].image,
-              videoURL: videoData[key].url,
+              videoURL: videoData[key].video_files[0].link,
             });
           }
-          console.log(loadedVideos);
           dispatch(generateActions.updateGeneratedVideos(loadedVideos));
         })
         .catch((error) => console.log(error));

@@ -87,7 +87,7 @@ const ChooseVideoCard = (props) => {
 
   // Video preview
   const mouseOverHandler = (e) => {
-    const playPromise = e.currentTarget.play();
+    var playPromise = e.target.play();
 
     if (playPromise !== undefined) {
       playPromise.then((_) => {}).catch((error) => {});
@@ -95,7 +95,7 @@ const ChooseVideoCard = (props) => {
   };
 
   const mouseOutHandler = (e) => {
-    e.currentTarget.pause();
+    e.target.pause();
   };
 
   // Search
@@ -166,12 +166,16 @@ const ChooseVideoCard = (props) => {
               <div className="column">
                 {videoCol1.map((videoArray) => (
                   <>
-                    <img
-                      src={videoArray.thumbnail}
-                      alt="videoPopup_video"
-                      style={{ width: "100%" }}
-                      onClick={() => videoClickHandler(videoArray)}
-                    />
+                    <div className="content-box">
+                      <video
+                        onMouseOver={mouseOverHandler}
+                        onMouseOut={mouseOutHandler}
+                        onClick={() => videoClickHandler(videoArray)}
+                        muted
+                        loop>
+                        <source src={videoArray.videoURL} type="video/mp4" />
+                      </video>
+                    </div>
                   </>
                 ))}
               </div>
@@ -179,12 +183,16 @@ const ChooseVideoCard = (props) => {
               <div className="column">
                 {videoCol2.map((videoArray) => (
                   <>
-                    <img
-                      src={videoArray.thumbnail}
-                      alt="videoPopup_video"
-                      style={{ width: "100%" }}
-                      onClick={() => videoClickHandler(videoArray)}
-                    />
+                    <div className="content-box">
+                      <video
+                        onMouseOver={mouseOverHandler}
+                        onMouseOut={mouseOutHandler}
+                        onClick={() => videoClickHandler(videoArray)}
+                        muted
+                        loop>
+                        <source src={videoArray.videoURL} type="video/mp4" />
+                      </video>
+                    </div>
                   </>
                 ))}
               </div>
@@ -192,12 +200,16 @@ const ChooseVideoCard = (props) => {
               <div className="column">
                 {videoCol3.map((videoArray) => (
                   <>
-                    <img
-                      src={videoArray.thumbnail}
-                      alt="videoPopup_video"
-                      style={{ width: "100%" }}
-                      onClick={() => videoClickHandler(videoArray)}
-                    />
+                    <div className="content-box">
+                      <video
+                        onMouseOver={mouseOverHandler}
+                        onMouseOut={mouseOutHandler}
+                        onClick={() => videoClickHandler(videoArray)}
+                        muted
+                        loop>
+                        <source src={videoArray.videoURL} type="video/mp4" />
+                      </video>
+                    </div>
                   </>
                 ))}
               </div>
