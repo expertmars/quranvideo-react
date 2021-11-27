@@ -119,9 +119,9 @@ const Form = (props) => {
             <label htmlFor="#" className="form-label">
               Background Videos
             </label>
-            <button onClick={props.formChooseFileHandler} className="form-choose">
+            <a onClick={props.formChooseFileHandler} className="form-choose">
               Choose Videos
-            </button>
+            </a>
           </div>
           <div className="form-group">
             <label htmlFor="resolution" className="form-label">
@@ -178,7 +178,6 @@ const Form = (props) => {
               <span className="form-checkbox__checkbox">&nbsp;</span>Arabic Meaning
             </label>
           </div>
-          <button type="submit">OK</button>
         </form>
       </div>
     </Fragment>

@@ -1,5 +1,4 @@
 import { Fragment } from "react";
-import GenerateForm from "../Form/GenerateForm";
 
 // Assets
 import logoWhite from "../assets/logo-white.png";

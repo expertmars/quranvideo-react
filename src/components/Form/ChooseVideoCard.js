@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import Modal from "../UI/Modal";
 import { generateActions } from "../../store/generate-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "../../store/ui-slice";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { Player } from "video-react";
-
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
+
+  const fileInputRef = useRef();
+
   const generatedImages = useSelector((state) => state.generate.generatedImages);
   const generatedVideos = useSelector((state) => state.generate.generatedVideos);
 
@@ -20,8 +21,7 @@ const ChooseVideoCard = (props) => {
 
   const totalDuration = useSelector((state) => state.generate.totalDuration);
 
-  // const videoPhotoMerged = selectedVideos.concat(selectedPhotos);
-
+  // onImage, onVideo Click Handlers
   const imageClickHandler = (imageArray) => {
     dispatch(generateActions.addPhotoToList(imageArray));
   };
@@ -30,6 +30,7 @@ const ChooseVideoCard = (props) => {
     dispatch(generateActions.addVideoToList(videoArray));
   };
 
+  // Top Tab Click Handlers
   const choosePhotoClickHandler = (e) => {
     dispatch(uiActions.hideChooseVideo());
     dispatch(uiActions.showChoosePhoto());
@@ -38,6 +39,10 @@ const ChooseVideoCard = (props) => {
   const chooseVideoClickHandler = (e) => {
     dispatch(uiActions.hideChoosePhoto());
     dispatch(uiActions.showChooseVideo());
+  };
+
+  const chooseFileClickHandler = () => {
+    fileInputRef.current.click();
   };
 
   // Photo Column - 15 photo  (15 / 3 = 5)
@@ -124,6 +129,11 @@ const ChooseVideoCard = (props) => {
     cutString(videoArray.thumbnail.split(`/${videoArray.id}/`)[1].split(`-${videoArray.id}.`)[0], 10);
   const imageName = (imageArray) => cutString(imageArray.name.split(`/photo/`)[1].toString(), 10);
 
+  // File Choose
+  const chooseFileChangeHandler = (e) => {
+    console.log(e.target.files[0]);
+  };
+
   return (
     <Modal onClose={props.onClose}>
       <div className="videopopup__row">
@@ -139,7 +149,14 @@ const ChooseVideoCard = (props) => {
           className={`videopopup__tab ${showChoosePhoto && `videopopup__tab--active`}`}>
           Choose Photo
         </a>
-        <a href="#" className="videopopup__tab">
+        <input
+          type="file"
+          id="file"
+          style={{ display: "none" }}
+          onChange={chooseFileChangeHandler}
+          ref={fileInputRef}
+        />
+        <a href="#" onClick={chooseFileClickHandler} className="videopopup__tab">
           Upload Video / Photo
         </a>
         <a href="#" onClick={props.onClose} className="videopopup__close">
@@ -293,7 +310,7 @@ const ChooseVideoCard = (props) => {
                 <h3 className="selectedvideo__name">{imageName(imageArray)}</h3>
                 <p className="selectedvideo__len">00:00</p>
               </div>
-              <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
+              <img src="https://i.imgur.com/v7wuPPh.png" alt="selectedvideo__images" className="selectedvideo__del" />
             </div>
           ))}
           {selectedVideos.map((videoArray) => (
@@ -303,7 +320,12 @@ const ChooseVideoCard = (props) => {
                 <h3 className="selectedvideo__name">{videoName(videoArray)}</h3>
                 <p className="selectedvideo__len">{timeConvert(videoArray.duration)}</p>
               </div>
-              <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
+              <img
+                src="https://i.imgur.com/v7wuPPh.png"
+                alt="selectedvideo__videos"
+                className="selectedvideo__del"
+                onClick={() => dispatch(generateActions.removeVideoFromList(videoArray))}
+              />
             </div>
           ))}
         </div>

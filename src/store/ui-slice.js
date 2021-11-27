@@ -7,6 +7,7 @@ const uiSlice = createSlice({
 
     chooseVideoIsVisible: false,
     choosePhotoIsVisible: false,
+    chooseFileIsVisible: false,
   },
   reducers: {
     // GenerateForm.js - UI Actions
@@ -30,6 +31,12 @@ const uiSlice = createSlice({
     },
     hideChoosePhoto(state, action) {
       state.choosePhotoIsVisible = false;
+    },
+    showChooseFile(state, action) {
+      state.chooseFileIsVisible = true;
+    },
+    hideChooseFile(state, action) {
+      state.chooseFileIsVisible = false;
     },
   },
 });

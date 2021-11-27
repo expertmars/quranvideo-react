@@ -23,14 +23,17 @@ const generateSlice = createSlice({
       const loadedImages = action.payload;
       state.generatedImages = state.generatedImages.concat(loadedImages);
     },
+
     addPhotoToList(state, action) {
       const targetPhoto = action.payload;
       state.selectedPhoto = state.selectedPhoto.concat(targetPhoto);
     },
+
     removePhotoFromList(state, action) {},
     updateImagePage(state, action) {
       state.imagePage++;
     },
+
     updateImageQuery(state, action) {
       const searchQuery = action.payload;
       state.imageQuery = searchQuery;
@@ -48,6 +51,10 @@ const generateSlice = createSlice({
       const targetVideo = action.payload;
       state.totalDuration = state.totalDuration + targetVideo.duration;
       state.selectedVideo = state.selectedVideo.concat(targetVideo);
+    },
+    removeVideoFromList(state, action) {
+      const itemId = action.payload;
+      state.selectedVideo = state.selectedVideo.filter((stateItem) => stateItem.id !== itemId.id);
     },
     updateVideoPage(state, action) {
       state.videoPage++;

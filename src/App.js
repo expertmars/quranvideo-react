@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Routes, Route, Link } from "react-router";
+import { Routes, Route } from "react-router";
 
 // Page
 import Home from "./components/Pages/Home";

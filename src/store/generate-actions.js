@@ -1,5 +1,4 @@
 import { generateActions } from "./generate-slice";
-import { useSelector } from "react-redux";
 
 export const fetchImageData = (imagePage, imageQuery) => {
   return async (dispatch) => {
