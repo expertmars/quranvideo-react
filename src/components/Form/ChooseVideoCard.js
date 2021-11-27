@@ -9,7 +9,7 @@ import { Player } from "video-react";
 
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
-  const photoThumbnail = useSelector((state) => state.generate.photoThumbnail);
+  const generatedImages = useSelector((state) => state.generate.generatedImages);
   const generatedVideos = useSelector((state) => state.generate.generatedVideos);
 
   const selectedPhotos = useSelector((state) => state.generate.selectedPhoto);
@@ -18,10 +18,12 @@ const ChooseVideoCard = (props) => {
   const showChooseVideo = useSelector((state) => state.ui.chooseVideoIsVisible);
   const showChoosePhoto = useSelector((state) => state.ui.choosePhotoIsVisible);
 
+  const totalDuration = useSelector((state) => state.generate.totalDuration);
+
   // const videoPhotoMerged = selectedVideos.concat(selectedPhotos);
 
-  const photoClickHandler = (e) => {
-    dispatch(generateActions.addPhotoToList(e.target.src));
+  const imageClickHandler = (imageArray) => {
+    dispatch(generateActions.addPhotoToList(imageArray));
   };
 
   const videoClickHandler = (videoArray) => {
@@ -39,7 +41,7 @@ const ChooseVideoCard = (props) => {
   };
 
   // Photo Column - 15 photo  (15 / 3 = 5)
-  const photoCount = photoThumbnail.length;
+  const photoCount = generatedImages.length;
   const photoPerCol = photoCount / 3; // 5
 
   let photoCol1 = [];
@@ -48,11 +50,11 @@ const ChooseVideoCard = (props) => {
 
   for (let i = 0; i < photoCount; i++) {
     if (photoCol1.length < photoPerCol) {
-      photoCol1.push(photoThumbnail[i]);
+      photoCol1.push(generatedImages[i]);
     } else if (photoCol2.length < photoPerCol) {
-      photoCol2.push(photoThumbnail[i]);
+      photoCol2.push(generatedImages[i]);
     } else {
-      photoCol3.push(photoThumbnail[i]);
+      photoCol3.push(generatedImages[i]);
     }
   }
 
@@ -105,6 +107,23 @@ const ChooseVideoCard = (props) => {
     }
   };
 
+  const searchImage = (e) => {
+    if (e.keyCode === 13) {
+      dispatch(generateActions.updateImageQuery(e.target.value));
+    }
+  };
+
+  // String manipulation for data name
+  const cutString = (string, number) => {
+    const cut = string.indexOf("-", number);
+    if (cut == -1) return string;
+    return string.substring(0, cut);
+  };
+
+  const videoName = (videoArray) =>
+    cutString(videoArray.thumbnail.split(`/${videoArray.id}/`)[1].split(`-${videoArray.id}.`)[0], 10);
+  const imageName = (imageArray) => cutString(imageArray.name.split(`/photo/`)[1].toString(), 10);
+
   return (
     <Modal onClose={props.onClose}>
       <div className="videopopup__row">
@@ -142,150 +161,155 @@ const ChooseVideoCard = (props) => {
         <img src="https://i.imgur.com/s3KmYLP.png" alt="videoPopup_row" className="videopopup__searchicon" />
         <input
           type="text"
-          onKeyDown={(e) => searchVideo(e)}
+          onKeyDown={(e) => {
+            showChooseVideo && searchVideo(e);
+            showChoosePhoto && searchImage(e);
+          }}
           placeholder="Search assets"
           className="videopopup__search"
         />
       </div>
       <div className="videopopup__row">
-        <div className="videopopup__row-grid">
-          <InfiniteScroll
-            dataLength={generatedVideos.length}
-            next={() => dispatch(generateActions.updateVideoPage())}
-            hasMore={true}
-            loader={<h4>Loading...</h4>}
-            height={360}
-            scrollThreshold="200px"
-            scrollableTarget="row"
-            endMessage={
-              <p style={{ textAlign: "center" }}>
-                <b>Yay! You have seen it all</b>
-              </p>
-            }>
-            <div className="row">
-              <div className="column">
-                {videoCol1.map((videoArray) => (
-                  <>
-                    <div className="content-box">
-                      <video
-                        onMouseOver={mouseOverHandler}
-                        onMouseOut={mouseOutHandler}
-                        onClick={() => videoClickHandler(videoArray)}
-                        muted
-                        loop>
-                        <source src={videoArray.videoURL} type="video/mp4" />
-                      </video>
-                    </div>
-                  </>
-                ))}
-              </div>
+        {showChooseVideo && (
+          <div className="videopopup__row-grid">
+            <InfiniteScroll
+              dataLength={generatedVideos.length}
+              next={() => dispatch(generateActions.updateVideoPage())}
+              hasMore={true}
+              loader={<h4>Loading...</h4>}
+              height={360}
+              scrollThreshold="200px"
+              scrollableTarget="row">
+              <div className="row">
+                <div className="column">
+                  {videoCol1.map((videoArray) => (
+                    <>
+                      <div className="content-box">
+                        <video
+                          onMouseOver={mouseOverHandler}
+                          onMouseOut={mouseOutHandler}
+                          onClick={() => videoClickHandler(videoArray)}
+                          muted
+                          loop>
+                          <source src={videoArray.videoURL} type="video/mp4" />
+                        </video>
+                      </div>
+                    </>
+                  ))}
+                </div>
 
-              <div className="column">
-                {videoCol2.map((videoArray) => (
-                  <>
-                    <div className="content-box">
-                      <video
-                        onMouseOver={mouseOverHandler}
-                        onMouseOut={mouseOutHandler}
-                        onClick={() => videoClickHandler(videoArray)}
-                        muted
-                        loop>
-                        <source src={videoArray.videoURL} type="video/mp4" />
-                      </video>
-                    </div>
-                  </>
-                ))}
-              </div>
+                <div className="column">
+                  {videoCol2.map((videoArray) => (
+                    <>
+                      <div className="content-box">
+                        <video
+                          onMouseOver={mouseOverHandler}
+                          onMouseOut={mouseOutHandler}
+                          onClick={() => videoClickHandler(videoArray)}
+                          muted
+                          loop>
+                          <source src={videoArray.videoURL} type="video/mp4" />
+                        </video>
+                      </div>
+                    </>
+                  ))}
+                </div>
 
-              <div className="column">
-                {videoCol3.map((videoArray) => (
-                  <>
-                    <div className="content-box">
-                      <video
-                        onMouseOver={mouseOverHandler}
-                        onMouseOut={mouseOutHandler}
-                        onClick={() => videoClickHandler(videoArray)}
-                        muted
-                        loop>
-                        <source src={videoArray.videoURL} type="video/mp4" />
-                      </video>
-                    </div>
-                  </>
-                ))}
+                <div className="column">
+                  {videoCol3.map((videoArray) => (
+                    <>
+                      <div className="content-box">
+                        <video
+                          onMouseOver={mouseOverHandler}
+                          onMouseOut={mouseOutHandler}
+                          onClick={() => videoClickHandler(videoArray)}
+                          muted
+                          loop>
+                          <source src={videoArray.videoURL} type="video/mp4" />
+                        </video>
+                      </div>
+                    </>
+                  ))}
+                </div>
               </div>
-            </div>
-          </InfiniteScroll>
-        </div>
+            </InfiniteScroll>
+          </div>
+        )}
 
         {/* Choose Photos Section */}
         {showChoosePhoto && (
           <div className="videopopup__row-grid">
-            <div className="row">
-              <div className="column">
-                <div className="row">
-                  <div className="column">
-                    {photoCol1.map((img) => (
-                      <img
-                        src={img.photo}
-                        alt="videoPopup_video"
-                        style={{ width: "100%" }}
-                        onClick={photoClickHandler}
-                      />
-                    ))}
-                  </div>
-                  <div className="column">
-                    {photoCol2.map((img) => (
-                      <img
-                        src={img.photo}
-                        alt="videoPopup_video"
-                        style={{ width: "100%" }}
-                        onClick={photoClickHandler}
-                      />
-                    ))}
-                  </div>
-                  <div className="column">
-                    {photoCol3.map((img) => (
-                      <img
-                        src={img.photo}
-                        alt="videoPopup_video"
-                        style={{ width: "100%" }}
-                        onClick={photoClickHandler}
-                      />
-                    ))}
-                  </div>
+            <InfiniteScroll
+              dataLength={generatedImages.length}
+              next={() => dispatch(generateActions.updateImagePage())}
+              hasMore={true}
+              loader={<h4>Loading...</h4>}
+              height={360}
+              scrollThreshold="200px"
+              scrollableTarget="row">
+              <div className="row">
+                <div className="column">
+                  {photoCol1.map((imageArray) => (
+                    <img
+                      src={imageArray.image}
+                      alt="videoPopup_image"
+                      style={{ width: "100%" }}
+                      onClick={() => imageClickHandler(imageArray)}
+                    />
+                  ))}
+                </div>
+                <div className="column">
+                  {photoCol2.map((imageArray) => (
+                    <img
+                      src={imageArray.image}
+                      alt="videoPopup_image"
+                      style={{ width: "100%" }}
+                      onClick={() => imageClickHandler(imageArray)}
+                    />
+                  ))}
+                </div>
+                <div className="column">
+                  {photoCol3.map((imageArray) => (
+                    <img
+                      src={imageArray.image}
+                      alt="videoPopup_image"
+                      style={{ width: "100%" }}
+                      onClick={() => imageClickHandler(imageArray)}
+                    />
+                  ))}
                 </div>
               </div>
-            </div>
+            </InfiniteScroll>
           </div>
         )}
         {/* Choose Photos Section - END */}
       </div>
       <div className="videopopup__row">
-        {selectedPhotos.map((img) => (
-          <div className="selectedvideo">
-            <img src={img} key={img} alt="videoPopup_video" className="selectedvideo__thumb" />
-            <div className="selectedvideo__left">
-              {" "}
-              <h3 className="selectedvideo__name">{img.split("w3images/")[1]}</h3>
-              <p className="selectedvideo__len">01:30</p>
+        <div class="selectedvideo">
+          {selectedPhotos.map((imageArray) => (
+            <div className="selectedvideo__box">
+              <img src={imageArray.image} key={imageArray.id} alt={imageArray.id} className="selectedvideo__thumb" />
+              <div className="selectedvideo__left">
+                <h3 className="selectedvideo__name">{imageName(imageArray)}</h3>
+                <p className="selectedvideo__len">00:00</p>
+              </div>
+              <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
             </div>
-            <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
-          </div> // sdds
-        ))}
-        {selectedVideos.map((videoArray) => (
-          <div className="selectedvideo">
-            <img src={videoArray.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
-            <div className="selectedvideo__left">
-              {" "}
-              <h3 className="selectedvideo__name">video-sample</h3>
-              <p className="selectedvideo__len">{timeConvert(videoArray.duration)}</p>
+          ))}
+          {selectedVideos.map((videoArray) => (
+            <div className="selectedvideo__box">
+              <img src={videoArray.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
+              <div className="selectedvideo__left">
+                <h3 className="selectedvideo__name">{videoName(videoArray)}</h3>
+                <p className="selectedvideo__len">{timeConvert(videoArray.duration)}</p>
+              </div>
+              <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
             </div>
-            <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_video" className="selectedvideo__del" />
-          </div> // sdds
-        ))}
+          ))}
+        </div>
         <div className="videopopup__timeinfo">
-          <span className="videopopup__current-time">03:54</span>
-          <span className="videopopup__remaining-time"> / 04:43</span>
+          <span className="videopopup__current-time">{timeConvert(totalDuration)}</span>
+          <span className="videopopup__remaining-time"> / 00:00</span>
         </div>
       </div>
       <div className="videopopup__row">

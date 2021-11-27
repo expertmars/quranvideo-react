@@ -575,16 +575,32 @@ HTML CSSResult Skip Results Iframe * {
 
 .videopopup__row-grid {
   height: 370px;
-  overflow-y: scroll;
+}
+
+.videopopup__row {
+  padding: 1.6rem 1.6rem;
 }
 
 .selectedvideo {
+  width: 445px;
+  display: inline-block;
+  border-right: 1px solid #0001;
+}
+
+.selectedvideo .selectedvideo__box {
   padding: 0 8px;
+  margin: 4px 4px;
   position: relative;
   background: #fff7ed;
   border: 1px solid #ffeed8;
   border-radius: 10px;
   display: inline-block;
+}
+
+.selectedvideo__box::after {
+  content: "";
+  clear: both;
+  display: table;
 }
 
 .selectedvideo__thumb {
@@ -620,7 +636,6 @@ HTML CSSResult Skip Results Iframe * {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  border-left: 1px solid #0001;
   padding: 15px 8px;
 }
 
