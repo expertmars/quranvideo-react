@@ -83,3 +83,76 @@ export const fetchVideoData = (videoPage, videoQuery) => {
     return fetchVideo();
   };
 };
+
+export const fetchQuranData = () => {
+  return async (dispatch) => {
+    const fetchQuran = async () => {
+      const response = await fetch("https://api.quran.com/api/v4/chapters?language=en", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Could not react to the server for fetching quran data.");
+      }
+
+      const responseData = await response
+        .json()
+        .then((data) => data.chapters)
+        .then((quranData) => {
+          for (const key in quranData) {
+            const loadedQuranData = [];
+            loadedQuranData.push({
+              id: quranData[key].id,
+              name: quranData[key].name_simple,
+              versesCount: quranData[key].verses_count,
+            });
+
+            dispatch(generateActions.updateQuranSurah(loadedQuranData));
+          }
+        })
+        .catch((error) => console.log(error));
+
+      console.log(responseData);
+
+      return responseData;
+    };
+
+    return fetchQuran();
+  };
+};
+
+export const fetchRecitorData = () => {
+  return async (dispatch) => {
+    const fetchRecitor = async () => {
+      const response = await fetch("https://api.quran.com/api/v4/resources/recitations?language=en", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Could not react to the server for fetching quran data.");
+      }
+
+      const responseData = await response
+        .json()
+        .then((data) => data.recitations)
+        .then((recitorData) => {
+          for (const key in recitorData) {
+            const loadedRecitorData = [];
+            loadedRecitorData.push({
+              id: recitorData[key].id,
+              name: recitorData[key].reciter_name,
+            });
+
+            dispatch(generateActions.updateRecitor(loadedRecitorData));
+          }
+        })
+        .catch((error) => console.log(error));
+
+      console.log(responseData);
+
+      return responseData;
+    };
+
+    return fetchRecitor();
+  };
+};

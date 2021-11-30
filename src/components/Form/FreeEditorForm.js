@@ -1,56 +1,76 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { generateActions } from "../../store/generate-slice";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
 
 const Form = (props) => {
-  const surahRef = useRef("surah1");
-  const fromAyahRef = useRef(1);
-  const toAyahRef = useRef(24);
-  const recitorRef = useRef("Mishary Al Fasi");
+  const dispatch = useDispatch();
+  const submissionButton = useSelector((state) => state.generate.submissionButton);
+  const quranSurah = useSelector((state) => state.generate.quranSurah);
+  const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
+  const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
+
+  const surahRef = useRef();
+  const fromAyahRef = useRef();
+  const toAyahRef = useRef();
+  const recitorRef = useRef();
   const translationRef = useRef();
   const resolutionRef = useRef();
   const englishMeaningRef = useRef();
   const translationMeaningRef = useRef();
   const arabicMeaningRef = useRef();
 
-  const submissionHandler = (e) => {
-    e.preventDefault();
-    console.log(
-      surahRef.current.value,
-      fromAyahRef.current.value,
-      toAyahRef.current.value,
-      recitorRef.current.value,
-      translationRef.current.value,
-      resolutionRef.current.value,
-      englishMeaningRef.current.checked,
-      translationMeaningRef.current.checked,
-      arabicMeaningRef.current.checked
-    );
+  const submissionButtonHandler = (formData) => {
+    dispatch(generateActions.updateToGenerateForm(formData));
   };
+
+  const surahRefChangeHandler = (e) => {
+    const index = e.target.selectedIndex;
+    const optionElement = e.target.childNodes[index];
+    const optionElementId = optionElement.getAttribute("id");
+    dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
+  };
+
+  const valueResettingHandler = (e) => {
+    if (e.target.value > selectedSurahVerseCount) {
+      e.target.value = selectedSurahVerseCount;
+    }
+  };
+
+  useEffect(() => {
+    if (submissionButton) {
+      const formData = {
+        surahRef: surahRef.current.value,
+        fromAyahRef: fromAyahRef.current.value,
+        toAyahRef: toAyahRef.current.value,
+        recitorRef: recitorRef.current.value,
+        translationRef: translationRef.current.value,
+        resolutionRef: resolutionRef.current.value,
+        englishMeaningRef: englishMeaningRef.current.checked,
+        translationMeaningRef: translationMeaningRef.current.checked,
+        arabicMeaningRef: arabicMeaningRef.current.checked,
+      };
+      submissionButtonHandler(formData);
+    }
+  }, [submissionButton]);
 
   return (
     <Fragment>
       <div>
         <img src={freeEditorIcon} alt="Free editor icon" className="editor__icon" />
-        <form onSubmit={submissionHandler}>
+        <form>
           <div className="form-group">
             <label htmlFor="surah" className="form-label">
               Surah
             </label>
-            <select className="form-list" id="surah" ref={surahRef}>
-              <option value={"surah1"} defaultValue className="form-list-item">
-                Al Fathiha
-              </option>
-              <option value={"surah2"} className="form-list-item">
-                Al Bakarah
-              </option>
-              <option value={"surah3"} className="form-list-item">
-                Alu Imran
-              </option>
-              <option value={"surah4"} className="form-list-item">
-                An Nisa
-              </option>
+            <select className="form-list" id="surah" ref={surahRef} onChange={surahRefChangeHandler}>
+              {quranSurah.map((surah) => (
+                <option value={surah.id} key={surah.id} defaultValue id={surah.versesCount} className="form-list-item">
+                  {surah.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -61,7 +81,7 @@ const Form = (props) => {
               type="number"
               defaultValue={1}
               min={1}
-              max={18}
+              max={17}
               className="header__form"
               name="fromayah"
               ref={fromAyahRef}
@@ -69,9 +89,10 @@ const Form = (props) => {
             <span className="to">to</span>
             <input
               type="number"
-              defaultValue={18}
               min={1}
-              max={18}
+              defaultValue={3}
+              onChange={valueResettingHandler}
+              max={selectedSurahVerseCount}
               className="header__form"
               name="toayah"
               ref={toAyahRef}
@@ -82,18 +103,11 @@ const Form = (props) => {
               Recitor
             </label>
             <select className="form-list" id="recitor" ref={recitorRef}>
-              <option value={1} className="form-list-item">
-                Mishary Al Fasi
-              </option>
-              <option value={2} className="form-list-item">
-                Al Bakarah
-              </option>
-              <option value={3} className="form-list-item">
-                Alu Imran
-              </option>
-              <option value={4} className="form-list-item">
-                An Nisa
-              </option>
+              {generatedRecitors.map((recitor) => (
+                <option value={recitor.id} className="form-list-item">
+                  {recitor.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -103,15 +117,6 @@ const Form = (props) => {
             <select className="form-list" id="translation" ref={translationRef}>
               <option value={1} className="form-list-item">
                 Malayalam
-              </option>
-              <option value={2} className="form-list-item">
-                Malayalam
-              </option>
-              <option value={3} className="form-list-item">
-                Alu Imran
-              </option>
-              <option value={4} className="form-list-item">
-                An Nisa
               </option>
             </select>
           </div>
@@ -132,13 +137,13 @@ const Form = (props) => {
                 Whatsapp Story
               </option>
               <option value={2} className="form-list-item">
-                Al Bakarah
+                Landscape
               </option>
               <option value={3} className="form-list-item">
-                Alu Imran
+                Instagram Story
               </option>
               <option value={4} className="form-list-item">
-                An Nisa
+                Portait
               </option>
             </select>
           </div>

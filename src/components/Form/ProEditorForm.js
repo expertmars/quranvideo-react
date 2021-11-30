@@ -1,18 +1,51 @@
-import { Fragment } from "react";
+import { Fragment, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { generateActions } from "../../store/generate-slice";
 
 // Assets
 import ProEditorIcon from "../assets/pro-editor.png";
 
 const ProEditorForm = (props) => {
+  const dispatch = useDispatch();
+  const submissionButton = useSelector((state) => state.generate.submissionButton);
+
+  const quranFontRef = useRef();
+  const translationFontRef = useRef();
+  const englishFontRef = useRef();
+  const removeWatermarkRef = useRef();
+  const watermarkFileRef = useRef();
+  const layoutRef = useRef();
+  const videoQualityRef = useRef();
+
+  const submissionButtonHandler = (formData) => {
+    dispatch(generateActions.updateToGenerateForm(formData));
+  };
+
+  useEffect(() => {
+    if (submissionButton) {
+      const formData = {
+        quranFontRef: quranFontRef.current.value,
+        translationFontRef: translationFontRef.current.value,
+        englishFontRef: englishFontRef.current.value,
+        removeWatermarkRef: removeWatermarkRef.current.checked,
+        watermarkFileRef: watermarkFileRef.current.value,
+        layoutRef: layoutRef.current.value,
+        videoQualityRef: videoQualityRef.current.value,
+      };
+
+      submissionButtonHandler(formData);
+    }
+  }, [submissionButton]);
+
   return (
     <Fragment>
       <img src={ProEditorIcon} alt="Pro editor icon" className="editor__icon" />
-      <form action="#">
+      <form>
         <div className="form-group">
           <label htmlFor="arabic-font" className="form-label">
             Quran Font
           </label>
-          <select className="form-list" id="translation">
+          <select className="form-list" id="translation" ref={quranFontRef}>
             <option value={1} className="form-list-item">
               Quran V2
             </option>
@@ -22,7 +55,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="translation-font" className="form-label">
             Translation Font
           </label>
-          <select className="form-list" id="translation">
+          <select className="form-list" id="translation" ref={translationFontRef}>
             <option value={1} className="form-list-item">
               Indulekha
             </option>
@@ -38,7 +71,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="english-font" className="form-label">
             English Font
           </label>
-          <select className="form-list" id="english-font">
+          <select className="form-list" id="english-font" ref={englishFontRef}>
             <option value={1} className="form-list-item">
               Roboto
             </option>
@@ -51,7 +84,7 @@ const ProEditorForm = (props) => {
           </select>
         </div>
         <div className="form-group">
-          <input type="checkbox" id="watermark" name="watermark" className="form-checkbox" />
+          <input type="checkbox" id="watermark" name="watermark" className="form-checkbox" ref={removeWatermarkRef} />
           <label htmlFor="watermark" className="form-checkbox__label">
             <span className="form-checkbox__checkbox">&nbsp;</span>Remove Watermark
           </label>
@@ -60,7 +93,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="file-choose" className="form-choose">
             Watermark{" "}
           </label>
-          <input type="file" id="file-choose" className="form-input-file" />
+          <input type="file" id="file-choose" className="form-input-file" ref={watermarkFileRef} />
           {/* <a href="#file-choose" id="uploadFile" class="form-choose"
                 >Choose a file</a
               > */}
@@ -69,7 +102,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="watermark-layout" className="form-label">
             Layout
           </label>
-          <select className="form-list" id="watermark-layout">
+          <select className="form-list" id="watermark-layout" ref={layoutRef}>
             <option value={1} className="form-list-item">
               Logo on top
             </option>
@@ -82,7 +115,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="video-quality" className="form-label">
             Video Quality
           </label>
-          <select className="form-list" id="video-quality">
+          <select className="form-list" id="video-quality" ref={videoQualityRef}>
             <option value={1} className="form-list-item">
               1920 x 1080
             </option>

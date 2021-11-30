@@ -4,7 +4,7 @@ import { uiActions } from "../../store/ui-slice";
 import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
-import { fetchImageData, fetchVideoData } from "../../store/generate-actions";
+import { fetchImageData, fetchVideoData, fetchQuranData, fetchRecitorData } from "../../store/generate-actions";
 import { generateActions } from "../../store/generate-slice";
 
 const GenerateForm = () => {
@@ -27,7 +27,9 @@ const GenerateForm = () => {
   };
 
   useEffect(() => {
+    dispatch(fetchRecitorData());
     dispatch(fetchImageData(imagePage, imageQuery));
+    dispatch(fetchQuranData());
     dispatch(fetchVideoData(videoPage, videoQuery));
   }, [imagePage, imageQuery, videoPage, videoQuery]);
 

@@ -3,25 +3,48 @@ import { createSlice } from "@reduxjs/toolkit";
 const generateSlice = createSlice({
   name: "generate",
   initialState: {
+    // GenerateForm
+    generateForm: [],
+    submissionButton: false,
+
+    // ChooseVideoCard
     selectedPhoto: [],
     selectedVideo: [],
-
     generatedImages: [],
     generatedVideos: [],
-
     totalDuration: 0,
-
     videoPage: 1,
     videoQuery: "nature",
-
     imagePage: 1,
     imageQuery: "nature",
+
+    // Fetched quran data
+    selectedSurahVerseCount: 17,
+    quranSurah: [],
+    generatedRecitors: [],
   },
   reducers: {
-    // Photo
+    // GenerateForm
+    updateToGenerateForm(state, action) {
+      const loadedItems = action.payload;
+      return {
+        ...state,
+        generateForm: [...state.generateForm, loadedItems],
+        submissionButton: false,
+      };
+    },
+
+    updateSubmissionButton(state, action) {
+      state.submissionButton = true;
+    },
+
+    // Photo - (ChooseVideoCard)
     updateGeneratedImages(state, action) {
       const loadedImages = action.payload;
-      state.generatedImages = state.generatedImages.concat(loadedImages);
+      return {
+        ...state,
+        generatedImages: [...state.generatedImages, ...loadedImages],
+      };
     },
 
     addPhotoToList(state, action) {
@@ -42,7 +65,7 @@ const generateSlice = createSlice({
       state.imagePage = 1;
     },
 
-    // Video
+    // Video - (ChooseVideoCard)
     updateGeneratedVideos(state, action) {
       const loadedVideos = action.payload;
       state.generatedVideos = state.generatedVideos.concat(loadedVideos);
@@ -66,9 +89,24 @@ const generateSlice = createSlice({
       state.generatedVideos = [];
       state.videoPage = 1;
     },
-    updateDuration(state, action) {},
 
-    // Misc
+    // Quran Data Fetching
+    updateQuranSurah(state, action) {
+      const loadedQuranData = action.payload;
+      state.quranSurah = state.quranSurah.concat(loadedQuranData);
+    },
+
+    updateSelectedSurahVerseCount(state, action) {
+      const loadedSelectedSurahVerseCount = action.payload;
+      state.selectedSurahVerseCount = loadedSelectedSurahVerseCount;
+    },
+
+    updateRecitor(state, action) {
+      const loadedRecitorData = action.payload;
+      state.generatedRecitors = state.generatedRecitors.concat(loadedRecitorData);
+    },
+
+    // Misc - (ChooseVideoCard)
     clearAll(state, action) {
       state.videoPage = 1;
       state.imagePage = 1;
