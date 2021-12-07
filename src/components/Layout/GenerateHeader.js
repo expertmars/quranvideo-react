@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { generateActions } from "../../store/generate-slice";
@@ -14,6 +14,10 @@ const GenerateHeader = () => {
     e.preventDefault();
     dispatch(generateActions.updateSubmissionButton());
   };
+
+  useEffect(() => {
+    console.log(generateForm);
+  }, [generateForm]);
 
   return (
     <Fragment>

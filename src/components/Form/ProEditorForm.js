@@ -8,7 +8,6 @@ import ProEditorIcon from "../assets/pro-editor.png";
 const ProEditorForm = (props) => {
   const dispatch = useDispatch();
   const submissionButton = useSelector((state) => state.generate.submissionButton);
-
   const quranFontRef = useRef();
   const translationFontRef = useRef();
   const englishFontRef = useRef();
@@ -17,9 +16,9 @@ const ProEditorForm = (props) => {
   const layoutRef = useRef();
   const videoQualityRef = useRef();
 
-  const submissionButtonHandler = (formData) => {
-    dispatch(generateActions.updateToGenerateForm(formData));
-  };
+  // const submissionButtonHandler = (formData) => {
+  //   dispatch(generateActions.updateToGenerateForm(formData));
+  // };
 
   useEffect(() => {
     if (submissionButton) {
@@ -33,7 +32,8 @@ const ProEditorForm = (props) => {
         videoQualityRef: videoQualityRef.current.value,
       };
 
-      submissionButtonHandler(formData);
+      props.proFormData(formData);
+      //    submissionButtonHandler(formData);
     }
   }, [submissionButton]);
 

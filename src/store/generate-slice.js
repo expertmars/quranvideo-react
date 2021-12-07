@@ -27,11 +27,14 @@ const generateSlice = createSlice({
     // GenerateForm
     updateToGenerateForm(state, action) {
       const loadedItems = action.payload;
-      return {
-        ...state,
-        generateForm: [...state.generateForm, loadedItems],
-        submissionButton: false,
-      };
+      state.generateForm = [loadedItems];
+      state.submissionButton = false;
+
+      // return {
+      //   ...state,
+      //   generateForm: [loadedItems],
+      //   submissionButton: false,
+      // };
     },
 
     updateSubmissionButton(state, action) {

@@ -22,10 +22,6 @@ const Form = (props) => {
   const translationMeaningRef = useRef();
   const arabicMeaningRef = useRef();
 
-  const submissionButtonHandler = (formData) => {
-    dispatch(generateActions.updateToGenerateForm(formData));
-  };
-
   const surahRefChangeHandler = (e) => {
     const index = e.target.selectedIndex;
     const optionElement = e.target.childNodes[index];
@@ -38,6 +34,10 @@ const Form = (props) => {
       e.target.value = selectedSurahVerseCount;
     }
   };
+
+  //const submissionButtonHandler = (formData) => {
+  //   dispatch(generateActions.updateToGenerateForm(formData));
+  // };
 
   useEffect(() => {
     if (submissionButton) {
@@ -52,7 +52,10 @@ const Form = (props) => {
         translationMeaningRef: translationMeaningRef.current.checked,
         arabicMeaningRef: arabicMeaningRef.current.checked,
       };
-      submissionButtonHandler(formData);
+
+      props.freeFormData(formData);
+
+      //    submissionButtonHandler(formData);
     }
   }, [submissionButton]);
 

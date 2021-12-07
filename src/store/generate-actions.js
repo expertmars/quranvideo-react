@@ -156,3 +156,20 @@ export const fetchRecitorData = () => {
     return fetchRecitor();
   };
 };
+
+export const startGenerateVideoData = (videoData) => {
+  return async (dispatch) => {
+    const startGenerateVideo = async () => {
+      const response = await fetch("http://localhost:3050/generate", {
+        method: "POST",
+        body: JSON.stringify(videoData),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+      console.log(data);
+    };
+
+    return startGenerateVideo();
+  };
+};
