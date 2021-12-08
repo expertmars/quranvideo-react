@@ -17,10 +17,26 @@ import { generateActions } from "../../store/generate-slice";
 
 const GenerateForm = () => {
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    arabicFont: 1,
+    englishFont: 1,
+    fromAyah: 1,
+    layout: 1,
+    recitor: 1,
+    resolution: 1,
+    showArabicMeaning: true,
+    showEnglishMeaning: true,
+    showTranslation: true,
+    surahName: 1,
+    toAyah: 3,
+    translation: 1,
+    translationFont: 1,
+    videoQuality: 1,
+    removeWatermark: false,
+  });
+
   const showFileChoose = useSelector((state) => state.ui.fileChooseIsVisible);
 
-  const generateForm = useSelector((state) => state.generate.generateForm);
   const submissionButton = useSelector((state) => state.generate.submissionButton);
 
   const videoPage = useSelector((state) => state.generate.videoPage);
@@ -38,29 +54,26 @@ const GenerateForm = () => {
     dispatch(generateActions.clearAll());
   };
 
-  let freeFormData;
-  let proFormData;
-  const freeFormDataHandler = (data) => {
-    freeFormData = { ...data };
+  const inputChangeHandler = (event) => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
-
-  const proFormDataHandler = (data) => {
-    proFormData = data;
-  };
-
-  console.log(freeFormData);
-
-  useEffect(() => {
-    dispatch(startGenerateVideoData(generateForm));
-  }, [generateForm]);
 
   const submissionButtonHandler = useCallback((data) => {
     dispatch(generateActions.updateToGenerateForm(data));
   });
 
   useEffect(() => {
-    submissionButtonHandler(formData);
-  }, [submissionButton]);
+    if (submissionButton) {
+      submissionButtonHandler(formData);
+    }
+  }, [formData, submissionButton]);
 
   useEffect(() => {
     dispatch(fetchRecitorData());
@@ -74,13 +87,13 @@ const GenerateForm = () => {
       {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
       <div className="editor">
         <div className="col-1-of-4">
-          <FreeEditorForm formChooseFileHandler={showChooseFile} freeFormData={freeFormDataHandler} />
+          <FreeEditorForm formChooseFileHandler={showChooseFile} onChangeHandler={inputChangeHandler} />
         </div>
         <div className="col-2-of-4">
           <ProgressBar animated now={45} striped variant="success" now={40} />
         </div>
         <div className="col-1-of-4">
-          <ProEditorForm proFormData={proFormDataHandler} />
+          <ProEditorForm onChangeHandler={inputChangeHandler} />
         </div>
       </div>
     </React.Fragment>

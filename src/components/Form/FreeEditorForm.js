@@ -1,63 +1,26 @@
-import { Fragment, useRef, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { generateActions } from "../../store/generate-slice";
+import { Fragment } from "react";
+import { useSelector } from "react-redux";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
 
 const Form = (props) => {
-  const dispatch = useDispatch();
-  const submissionButton = useSelector((state) => state.generate.submissionButton);
   const quranSurah = useSelector((state) => state.generate.quranSurah);
   const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
   const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
 
-  const surahRef = useRef();
-  const fromAyahRef = useRef();
-  const toAyahRef = useRef();
-  const recitorRef = useRef();
-  const translationRef = useRef();
-  const resolutionRef = useRef();
-  const englishMeaningRef = useRef();
-  const translationMeaningRef = useRef();
-  const arabicMeaningRef = useRef();
-
-  const surahRefChangeHandler = (e) => {
-    const index = e.target.selectedIndex;
-    const optionElement = e.target.childNodes[index];
-    const optionElementId = optionElement.getAttribute("id");
-    dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
-  };
-
-  const valueResettingHandler = (e) => {
-    if (e.target.value > selectedSurahVerseCount) {
-      e.target.value = selectedSurahVerseCount;
-    }
-  };
-
-  //const submissionButtonHandler = (formData) => {
-  //   dispatch(generateActions.updateToGenerateForm(formData));
+  // const surahRefChangeHandler = (e) => {
+  //   const index = e.target.selectedIndex;
+  //   const optionElement = e.target.childNodes[index];
+  //   const optionElementId = optionElement.getAttribute("id");
+  //   dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
   // };
 
-  useEffect(() => {
-    if (submissionButton) {
-      const formData = {
-        surahRef: surahRef.current.value,
-        fromAyahRef: fromAyahRef.current.value,
-        toAyahRef: toAyahRef.current.value,
-        recitorRef: recitorRef.current.value,
-        translationRef: translationRef.current.value,
-        resolutionRef: resolutionRef.current.value,
-        englishMeaningRef: englishMeaningRef.current.checked,
-        translationMeaningRef: translationMeaningRef.current.checked,
-        arabicMeaningRef: arabicMeaningRef.current.checked,
-      };
-
-      props.freeFormData(formData);
-
-      //    submissionButtonHandler(formData);
-    }
-  }, [submissionButton]);
+  // const valueResettingHandler = (e) => {
+  //   if (e.target.value > selectedSurahVerseCount) {
+  //     e.target.value = selectedSurahVerseCount;
+  //   }
+  // };
 
   return (
     <Fragment>
@@ -68,7 +31,7 @@ const Form = (props) => {
             <label htmlFor="surah" className="form-label">
               Surah
             </label>
-            <select className="form-list" id="surah" ref={surahRef} onChange={surahRefChangeHandler}>
+            <select className="form-list" name="surahName" onChange={props.onChangeHandler}>
               {quranSurah.map((surah) => (
                 <option value={surah.id} key={surah.id} defaultValue id={surah.versesCount} className="form-list-item">
                   {surah.name}
@@ -86,26 +49,25 @@ const Form = (props) => {
               min={1}
               max={17}
               className="header__form"
-              name="fromayah"
-              ref={fromAyahRef}
+              name="fromAyah"
+              onChange={props.onChangeHandler}
             />
             <span className="to">to</span>
             <input
               type="number"
               min={1}
               defaultValue={3}
-              onChange={valueResettingHandler}
+              onChange={props.onChangeHandler}
               max={selectedSurahVerseCount}
               className="header__form"
-              name="toayah"
-              ref={toAyahRef}
+              name="toAyah"
             />
           </div>
           <div className="form-group">
             <label htmlFor="recitor" className="form-label">
               Recitor
             </label>
-            <select className="form-list" id="recitor" ref={recitorRef}>
+            <select className="form-list" name="recitor" onChange={props.onChangeHandler}>
               {generatedRecitors.map((recitor) => (
                 <option value={recitor.id} className="form-list-item">
                   {recitor.name}
@@ -117,9 +79,12 @@ const Form = (props) => {
             <label htmlFor="translation" className="form-label">
               Translation
             </label>
-            <select className="form-list" id="translation" ref={translationRef}>
+            <select className="form-list" name="translation" onChange={props.onChangeHandler}>
               <option value={1} className="form-list-item">
                 Malayalam
+              </option>
+              <option value={2} className="form-list-item">
+                Malayalam2
               </option>
             </select>
           </div>
@@ -135,7 +100,7 @@ const Form = (props) => {
             <label htmlFor="resolution" className="form-label">
               Resolution
             </label>
-            <select className="form-list" id="resolution" ref={resolutionRef}>
+            <select className="form-list" name="resolution" onChange={props.onChangeHandler}>
               <option value={1} className="form-list-item">
                 Whatsapp Story
               </option>
@@ -154,9 +119,10 @@ const Form = (props) => {
             <input
               type="checkbox"
               defaultChecked
-              id="english-meaning"
               className="form-checkbox"
-              ref={englishMeaningRef}
+              id="english-meaning"
+              name="showEnglishMeaning"
+              onChange={props.onChangeHandler}
             />
             <label htmlFor="english-meaning" className="form-checkbox__label">
               <span className="form-checkbox__checkbox">&nbsp;</span>English Meaning
@@ -165,10 +131,11 @@ const Form = (props) => {
           <div className="form-group">
             <input
               type="checkbox"
-              defaultChecked
+              name="showTranslation"
               id="translation_checkbox"
+              defaultChecked
               className="form-checkbox"
-              ref={translationMeaningRef}
+              onChange={props.onChangeHandler}
             />
             <label htmlFor="translation_checkbox" className="form-checkbox__label">
               <span className="form-checkbox__checkbox">&nbsp;</span>Translation
@@ -179,8 +146,9 @@ const Form = (props) => {
               type="checkbox"
               defaultChecked
               id="arabic-meaning"
+              name="showArabicMeaning"
               className="form-checkbox"
-              ref={arabicMeaningRef}
+              onChange={props.onChangeHandler}
             />
             <label htmlFor="arabic-meaning" className="form-checkbox__label">
               <span className="form-checkbox__checkbox">&nbsp;</span>Arabic Meaning

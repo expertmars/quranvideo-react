@@ -1,42 +1,8 @@
-import { Fragment, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { generateActions } from "../../store/generate-slice";
-
+import { Fragment } from "react";
 // Assets
 import ProEditorIcon from "../assets/pro-editor.png";
 
 const ProEditorForm = (props) => {
-  const dispatch = useDispatch();
-  const submissionButton = useSelector((state) => state.generate.submissionButton);
-  const quranFontRef = useRef();
-  const translationFontRef = useRef();
-  const englishFontRef = useRef();
-  const removeWatermarkRef = useRef();
-  const watermarkFileRef = useRef();
-  const layoutRef = useRef();
-  const videoQualityRef = useRef();
-
-  // const submissionButtonHandler = (formData) => {
-  //   dispatch(generateActions.updateToGenerateForm(formData));
-  // };
-
-  useEffect(() => {
-    if (submissionButton) {
-      const formData = {
-        quranFontRef: quranFontRef.current.value,
-        translationFontRef: translationFontRef.current.value,
-        englishFontRef: englishFontRef.current.value,
-        removeWatermarkRef: removeWatermarkRef.current.checked,
-        watermarkFileRef: watermarkFileRef.current.value,
-        layoutRef: layoutRef.current.value,
-        videoQualityRef: videoQualityRef.current.value,
-      };
-
-      props.proFormData(formData);
-      //    submissionButtonHandler(formData);
-    }
-  }, [submissionButton]);
-
   return (
     <Fragment>
       <img src={ProEditorIcon} alt="Pro editor icon" className="editor__icon" />
@@ -45,9 +11,12 @@ const ProEditorForm = (props) => {
           <label htmlFor="arabic-font" className="form-label">
             Quran Font
           </label>
-          <select className="form-list" id="translation" ref={quranFontRef}>
+          <select className="form-list" name="arabicFont" onChange={props.onChangeHandler}>
             <option value={1} className="form-list-item">
               Quran V2
+            </option>
+            <option value={2} className="form-list-item">
+              Quran V3
             </option>
           </select>
         </div>
@@ -55,7 +24,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="translation-font" className="form-label">
             Translation Font
           </label>
-          <select className="form-list" id="translation" ref={translationFontRef}>
+          <select className="form-list" name="translationFont" onChange={props.onChangeHandler}>
             <option value={1} className="form-list-item">
               Indulekha
             </option>
@@ -71,7 +40,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="english-font" className="form-label">
             English Font
           </label>
-          <select className="form-list" id="english-font" ref={englishFontRef}>
+          <select className="form-list" name="englishFont" onChange={props.onChangeHandler}>
             <option value={1} className="form-list-item">
               Roboto
             </option>
@@ -84,16 +53,28 @@ const ProEditorForm = (props) => {
           </select>
         </div>
         <div className="form-group">
-          <input type="checkbox" id="watermark" name="watermark" className="form-checkbox" ref={removeWatermarkRef} />
-          <label htmlFor="watermark" className="form-checkbox__label">
+          <input
+            type="checkbox"
+            name="removeWatermark"
+            id="removeWatermark"
+            className="form-checkbox"
+            onChange={props.onChangeHandler}
+          />
+          <label htmlFor="removeWatermark" className="form-checkbox__label">
             <span className="form-checkbox__checkbox">&nbsp;</span>Remove Watermark
           </label>
         </div>
         <div className="form-group">
-          <label htmlFor="file-choose" className="form-choose">
+          <label htmlFor="chooseOwnWatermark" className="form-choose">
             Watermark{" "}
           </label>
-          <input type="file" id="file-choose" className="form-input-file" ref={watermarkFileRef} />
+          <input
+            type="file"
+            id="chooseOwnWatermark"
+            name="chooseOwnWatermark"
+            className="form-input-file"
+            onChange={props.onChangeHandler}
+          />
           {/* <a href="#file-choose" id="uploadFile" class="form-choose"
                 >Choose a file</a
               > */}
@@ -102,7 +83,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="watermark-layout" className="form-label">
             Layout
           </label>
-          <select className="form-list" id="watermark-layout" ref={layoutRef}>
+          <select className="form-list" name="layout" onChange={props.onChangeHandler}>
             <option value={1} className="form-list-item">
               Logo on top
             </option>
@@ -115,7 +96,7 @@ const ProEditorForm = (props) => {
           <label htmlFor="video-quality" className="form-label">
             Video Quality
           </label>
-          <select className="form-list" id="video-quality" ref={videoQualityRef}>
+          <select className="form-list" name="videoQuality" onChange={props.onChangeHandler}>
             <option value={1} className="form-list-item">
               1920 x 1080
             </option>

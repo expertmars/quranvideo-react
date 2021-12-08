@@ -15,10 +15,6 @@ const GenerateHeader = () => {
     dispatch(generateActions.updateSubmissionButton());
   };
 
-  useEffect(() => {
-    console.log(generateForm);
-  }, [generateForm]);
-
   return (
     <Fragment>
       <header className="generate-header">
