@@ -33,6 +33,10 @@ select {
   padding-right: 2rem;
 }
 
+.form-group input:active {
+  font-size: 1px;
+}
+
 .form-group input {
   width: 8.4rem;
   height: 5rem;
@@ -47,6 +51,12 @@ select {
   background-position-x: 80%;
   background-position-y: 10px;
   border: 1px solid #dfdfdf;
+  font-size: 1.3rem;
+}
+
+.form-group select {
+  font-size: 1.3rem;
+  color: red;
 }
 
 /* Scroll Styling */
@@ -502,6 +512,49 @@ body {
 
 HTML CSSResult Skip Results Iframe * {
   font-family: "Inter";
+}
+
+.progresspopup {
+  border: 1px solid #0003;
+  border-radius: 10px;
+  position: absolute;
+  padding: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 20vh;
+  margin: auto;
+  z-index: 100;
+  background-color: rgb(255, 255, 255);
+}
+
+.progress {
+  font-size: 1.3rem;
+  height: 2rem;
+  width: 100%;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.progressBox {
+  width: 100%;
+  text-align: center;
+
+  background-color: white;
+  margin: 0;
+  padding: 10px;
+}
+
+.progressBox__text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(114, 114, 114);
+}
+
+.progressBox .progressBar {
+  margin: 2rem;
 }
 
 .videopopup {

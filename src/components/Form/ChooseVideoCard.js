@@ -135,7 +135,7 @@ const ChooseVideoCard = (props) => {
   };
 
   return (
-    <Modal onClose={props.onClose}>
+    <Modal onClose={props.onClose} modalClass={"videopopup"}>
       <div className="videopopup__row">
         <a
           href="#"

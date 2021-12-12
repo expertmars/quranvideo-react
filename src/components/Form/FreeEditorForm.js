@@ -1,26 +1,32 @@
 import { Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { generateActions } from "../../store/generate-slice";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
 
 const Form = (props) => {
+  const dispatch = useDispatch();
   const quranSurah = useSelector((state) => state.generate.quranSurah);
   const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
   const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
 
-  // const surahRefChangeHandler = (e) => {
-  //   const index = e.target.selectedIndex;
-  //   const optionElement = e.target.childNodes[index];
-  //   const optionElementId = optionElement.getAttribute("id");
-  //   dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
-  // };
+  const surahRefChangeHandler = (e) => {
+    const index = e.target.selectedIndex;
+    const optionElement = e.target.childNodes[index];
+    const optionElementId = optionElement.getAttribute("id");
+    dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
 
-  // const valueResettingHandler = (e) => {
-  //   if (e.target.value > selectedSurahVerseCount) {
-  //     e.target.value = selectedSurahVerseCount;
-  //   }
-  // };
+    props.onChangeHandler(e);
+  };
+
+  const valueResettingHandler = (e) => {
+    if (e.target.value > selectedSurahVerseCount) {
+      e.target.value = selectedSurahVerseCount;
+    }
+
+    props.onChangeHandler(e);
+  };
 
   return (
     <Fragment>
@@ -31,7 +37,7 @@ const Form = (props) => {
             <label htmlFor="surah" className="form-label">
               Surah
             </label>
-            <select className="form-list" name="surahName" onChange={props.onChangeHandler}>
+            <select className="form-list" name="surahName" onChange={surahRefChangeHandler}>
               {quranSurah.map((surah) => (
                 <option value={surah.id} key={surah.id} defaultValue id={surah.versesCount} className="form-list-item">
                   {surah.name}
@@ -47,17 +53,24 @@ const Form = (props) => {
               type="number"
               defaultValue={1}
               min={1}
-              max={17}
+              max={selectedSurahVerseCount}
               className="header__form"
               name="fromAyah"
               onChange={props.onChangeHandler}
             />
+            {/* <select className="form-list" name="fromAyah" onChange={props.onChangeHandler}>
+              {Array.from({ length: selectedSurahVerseCount }, (_, k) => {
+                <option value={k} className="form-list-item">
+                  {k}
+                </option>;
+              })}
+            </select> */}
             <span className="to">to</span>
             <input
               type="number"
               min={1}
               defaultValue={3}
-              onChange={props.onChangeHandler}
+              onChange={valueResettingHandler}
               max={selectedSurahVerseCount}
               className="header__form"
               name="toAyah"
@@ -80,11 +93,11 @@ const Form = (props) => {
               Translation
             </label>
             <select className="form-list" name="translation" onChange={props.onChangeHandler}>
-              <option value={1} className="form-list-item">
-                Malayalam
+              <option value={37} className="form-list-item">
+                Malayalam - Abdul Hameed and Kunhi Mohammed
               </option>
-              <option value={2} className="form-list-item">
-                Malayalam2
+              <option value={80} className="form-list-item">
+                Malayalam - Muhammad Karakunnu and Vanidas Elayavoor
               </option>
             </select>
           </div>
@@ -101,10 +114,10 @@ const Form = (props) => {
               Resolution
             </label>
             <select className="form-list" name="resolution" onChange={props.onChangeHandler}>
-              <option value={1} className="form-list-item">
+              <option value={"720x1080"} className="form-list-item">
                 Whatsapp Story
               </option>
-              <option value={2} className="form-list-item">
+              <option value={550} className="form-list-item">
                 Landscape
               </option>
               <option value={3} className="form-list-item">

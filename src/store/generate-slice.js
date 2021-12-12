@@ -19,7 +19,7 @@ const generateSlice = createSlice({
     imageQuery: "nature",
 
     // Fetched quran data
-    selectedSurahVerseCount: 17,
+    selectedSurahVerseCount: 7,
     quranSurah: [],
     generatedRecitors: [],
   },
@@ -27,7 +27,7 @@ const generateSlice = createSlice({
     // GenerateForm
     updateToGenerateForm(state, action) {
       const loadedItems = action.payload;
-      state.generateForm = [loadedItems];
+      state.generateForm = [loadedItems, state.selectedVideo, state.selectedPhoto];
       state.submissionButton = false;
 
       // return {

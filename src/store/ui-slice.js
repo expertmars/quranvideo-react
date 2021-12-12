@@ -8,6 +8,8 @@ const uiSlice = createSlice({
     chooseVideoIsVisible: false,
     choosePhotoIsVisible: false,
     chooseFileIsVisible: false,
+
+    progressModalIsVisible: false,
   },
   reducers: {
     // GenerateForm.js - UI Actions
@@ -37,6 +39,14 @@ const uiSlice = createSlice({
     },
     hideChooseFile(state, action) {
       state.chooseFileIsVisible = false;
+    },
+
+    // ProgressModal.js
+    showProgressModal(state, action) {
+      state.progressModalIsVisible = true;
+    },
+    hideProgressModal(state, action) {
+      state.progressModalIsVisible = false;
     },
   },
 });
