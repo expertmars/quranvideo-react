@@ -1,0 +1,61 @@
+.splitBtn {
+  /* width: 100%; */
+  color: red;
+}
+
+.tageditor input {
+  background-image: none;
+  /* font-size: 3rem; */
+  width: auto;
+}
+
+.tageditor input:active {
+  /* font-size: 3rem; */
+}
+
+.tageditor {
+  display: flex;
+}
+
+.tageditor ul {
+  display: flex;
+}
+
+.tageditor textarea {
+  height: 20px;
+  margin-top: 20px;
+  /* border: none; */
+  resize: none;
+}
+
+input {
+  caret-color: red;
+  border: 1px solid transparent;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  outline: 1px solid black;
+  height: 3.5rem;
+  padding: 1rem;
+}
+
+textarea {
+  height: 20px;
+  width: auto;
+  margin: 20px;
+  /* border: none; */
+  resize: none;
+}
+
+.tageditor textarea:focus {
+  border: none;
+  outline: none;
+}
+
+.tageditor ul li {
+  list-style-type: none;
+  padding: 5px 5px;
+  margin: 2px;
+  border: 1px solid transparent;
+  background-color: #f2f2f2;
+  border-radius: 0.5rem;
+}

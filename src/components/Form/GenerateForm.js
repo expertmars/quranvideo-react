@@ -5,13 +5,21 @@ import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
 import ProgressModal from "./ProgressModal";
+import AyahEditorModal from "./AyahEditorModal";
 
-import { fetchImageData, fetchVideoData, fetchQuranData, fetchRecitorData } from "../../store/generate-actions";
+import {
+  fetchImageData,
+  fetchVideoData,
+  fetchQuranData,
+  fetchRecitorData,
+  fetchAyahData,
+} from "../../store/generate-actions";
 import { generateActions } from "../../store/generate-slice";
 
 import socketIO from "../hooks/socket";
 
 const GenerateForm = () => {
+  const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -30,13 +38,18 @@ const GenerateForm = () => {
     translationFont: 1,
     videoQuality: 1,
     removeWatermark: false,
+    uid: userData.uId,
+    email: userData.email,
   });
 
   const showFileChoose = useSelector((state) => state.ui.fileChooseIsVisible);
 
   const submissionButton = useSelector((state) => state.generate.submissionButton);
 
+  const editButton = useSelector((state) => state.generate.editButtonIsClicked);
+
   const showProgressModal = useSelector((state) => state.ui.progressModalIsVisible);
+  const showAyahEditorModal = useSelector((state) => state.ui.ayahEditorIsVisible);
 
   const videoPage = useSelector((state) => state.generate.videoPage);
   const videoQuery = useSelector((state) => state.generate.videoQuery);
@@ -52,6 +65,10 @@ const GenerateForm = () => {
   const hideChooseFile = () => {
     dispatch(uiActions.hideFileChoose());
     dispatch(generateActions.clearAll());
+  };
+
+  const hideAyahEditor = () => {
+    dispatch(uiActions.hideAyahEditorModal());
   };
 
   // Form Handling
@@ -84,31 +101,55 @@ const GenerateForm = () => {
     dispatch(generateActions.updateToGenerateForm(data));
   });
 
+  const editButtonHandler = useCallback((data) => {
+    dispatch(generateActions.updateToEditForm(data));
+  });
+
   useEffect(() => {
+    if (editButton) {
+      editButtonHandler(formData);
+      return;
+    }
     if (submissionButton) {
       submissionButtonHandler(formData);
     }
-  }, [formData, submissionButton]);
+  }, [formData, submissionButton, editButton]);
 
   // Choose Video Card Data Fetching
   useEffect(() => {
     dispatch(fetchRecitorData());
-    dispatch(fetchImageData(imagePage, imageQuery));
     dispatch(fetchQuranData());
-    dispatch(fetchVideoData(videoPage, videoQuery));
-  }, [imagePage, imageQuery, videoPage, videoQuery]);
+  }, []);
+
+  useEffect(() => {
+    if (showFileChoose) {
+      dispatch(fetchImageData(imagePage, imageQuery));
+      dispatch(fetchVideoData(videoPage, videoQuery));
+    }
+  }, [showFileChoose, imagePage, imageQuery, videoPage, videoQuery]);
 
   useEffect(() => {
     var socket = socketIO.connectIO();
-    socket.emit("join", { email: "mubarak@gmail.com" });
+    socket.emit("join", { email: userData.email });
 
     socket.on("generate", () => {
       dispatch(uiActions.showProgressModal());
     });
+
+    socket.on("onAyahEditorLoad", (data) => {
+      dispatch(uiActions.showAyahEditorModal());
+
+      console.log(data);
+    });
   }, []);
+
+  // Fetch Ayah
+
+  useEffect(() => {}, [formData]);
 
   return (
     <React.Fragment>
+      {showAyahEditorModal && <AyahEditorModal onClose={hideAyahEditor} ayahs={[formData.toAyah, formData.fromAyah]} />}
       {showProgressModal && <ProgressModal />}
       {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
       <div className="editor">

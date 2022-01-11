@@ -15,6 +15,8 @@ const GenerateHeader = () => {
     dispatch(generateActions.updateSubmissionButton());
   };
 
+  const userData = useSelector((state) => state.auth.userData);
+
   return (
     <Fragment>
       <header className="generate-header">
@@ -23,8 +25,14 @@ const GenerateHeader = () => {
         </div>
         <div className="generate-header__left">
           <div className="generate-header__user">
-            <div className="generate-header__user-avatar">M</div>
-            <div className="generate-header__user-text">armuneermalik@gmail.com</div>
+            <div
+              className="generate-header__user-avatar"
+              style={{
+                backgroundImage: `url(${userData.avatar})`,
+              }}>
+              &nbsp; {!userData.avatar && "M"}
+            </div>
+            <div className="generate-header__user-text">{userData.email}</div>
           </div>
           <a onClick={downloadHandler} href="/" className="generate-header__btn">
             Download

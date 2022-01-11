@@ -1,6 +1,10 @@
 import { Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { generateActions } from "../../store/generate-slice";
+import generateSlice, { generateActions } from "../../store/generate-slice";
+import { uiActions } from "../../store/ui-slice";
+
+// import { useSelector, useDispatch } from "react-redux";
+import { startGenerateVideoData } from "../../store/generate-actions";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
@@ -10,22 +14,29 @@ const Form = (props) => {
   const quranSurah = useSelector((state) => state.generate.quranSurah);
   const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
   const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
+  const generateForm = useSelector((state) => state.generate.generateForm);
 
   const surahRefChangeHandler = (e) => {
     const index = e.target.selectedIndex;
     const optionElement = e.target.childNodes[index];
     const optionElementId = optionElement.getAttribute("id");
     dispatch(generateActions.updateSelectedSurahVerseCount(optionElementId));
-
+    dispatch(generateActions.resetAyahKeysAndListOfAyah());
     props.onChangeHandler(e);
   };
 
   const valueResettingHandler = (e) => {
-    if (e.target.value > selectedSurahVerseCount) {
-      e.target.value = selectedSurahVerseCount;
+    var max = parseInt(e.target.max);
+    var min = parseInt(e.target.min);
+    if (e.target.value > max) {
+      e.target.value = max;
     }
-
     props.onChangeHandler(e);
+  };
+
+  const showEditorHandler = () => {
+    dispatch(generateActions.updateEditButtonIsClicked());
+    dispatch(uiActions.showAyahEditorModal());
   };
 
   return (
@@ -110,6 +121,14 @@ const Form = (props) => {
             </a>
           </div>
           <div className="form-group">
+            <label htmlFor="#" className="form-label">
+              Ayah Editor
+            </label>
+            <a onClick={showEditorHandler} className="form-choose">
+              Edit
+            </a>
+          </div>
+          <div className="form-group">
             <label htmlFor="resolution" className="form-label">
               Resolution
             </label>
@@ -117,7 +136,7 @@ const Form = (props) => {
               <option value={"720x1080"} className="form-list-item">
                 Whatsapp Story
               </option>
-              <option value={550} className="form-list-item">
+              <option value={"1080x720"} className="form-list-item">
                 Landscape
               </option>
               <option value={3} className="form-list-item">

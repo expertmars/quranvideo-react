@@ -7,6 +7,10 @@ const generateSlice = createSlice({
     generateForm: [],
     submissionButton: false,
 
+    // Edit Button
+    editForm: [],
+    editButtonIsClicked: false,
+
     // ChooseVideoCard
     selectedPhoto: [],
     selectedVideo: [],
@@ -22,6 +26,12 @@ const generateSlice = createSlice({
     selectedSurahVerseCount: 7,
     quranSurah: [],
     generatedRecitors: [],
+
+    // Fetch Ayah - (generate-actions.js)
+    ayahKeys: {},
+    listOfAyah: {},
+    localTrans: [],
+    engTrans: [],
   },
   reducers: {
     // GenerateForm
@@ -37,8 +47,50 @@ const generateSlice = createSlice({
       // };
     },
 
+    // Edit Button
+
+    updateToEditForm(state, action) {
+      const loadedItems = action.payload;
+      state.editForm = [loadedItems, state.selectedVideo, state.selectedPhoto];
+      state.submissionButton = false;
+    },
+
+    updateEditButtonIsClicked(state, action) {
+      state.editButtonIsClicked = true;
+    },
+
     updateSubmissionButton(state, action) {
       state.submissionButton = true;
+    },
+
+    // Fetch Ayah - (generate-actions.js)
+    updateAyahKeys(state, action) {
+      const verseKey = action.payload.verseKey;
+      const glyph = action.payload.glyph;
+      console.log(verseKey, glyph);
+      state.ayahKeys[verseKey] = glyph;
+    },
+
+    updateListOfAyah(state, action) {
+      const page = action.payload.page;
+      const glyph = action.payload.glyph;
+      // console.log(page);
+      state.listOfAyah[glyph] = page;
+    },
+
+    resetAyahKeysAndListOfAyah(state, action) {
+      state.listOfAyah = {};
+      state.ayahKeys = {};
+    },
+
+    updateTransLocal(state, action) {
+      const loadedTrans = action.payload;
+      state.localTrans = loadedTrans;
+    },
+
+    updateTransEnglish(state, action) {
+      const loadedTrans = action.payload;
+      state.engTrans = loadedTrans;
     },
 
     // Photo - (ChooseVideoCard)

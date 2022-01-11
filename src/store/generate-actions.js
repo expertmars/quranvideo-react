@@ -1,4 +1,6 @@
 import { generateActions } from "./generate-slice";
+import socketIO from "../components/hooks/socket";
+import convertToFML from "../store/converter";
 
 export const fetchImageData = (imagePage, imageQuery) => {
   return async (dispatch) => {
@@ -45,7 +47,7 @@ export const fetchVideoData = (videoPage, videoQuery) => {
   return async (dispatch) => {
     const fetchVideo = async () => {
       const response = await fetch(
-        `https://api.pexels.com/videos/search?page=${videoPage}&query=${videoQuery}&per_page=15`,
+        `https://api.pexels.com/videos/search?page=${videoPage}&query=${videoQuery}&per_page=15&size=medium`,
         {
           headers: {
             Authorization: "563492ad6f91700001000001290bb5e8cc084013ac451e247fb800fb",
@@ -166,10 +168,77 @@ export const startGenerateVideoData = (videoData) => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
-      console.log(data);
+      // var socket = socketIO.connectIO();
+      // socket.emit("generateVideo", videoData);
+
+      // const data = await response.json();
+      // console.log(data);
     };
 
     return startGenerateVideo();
+  };
+};
+
+export const fetchAyahData = (formData, ayahKeys) => {
+  return async (dispatch) => {
+    const fetchAyah = async () => {
+      // const surahName = this.downloadOption["surahName"];
+      const from = formData[0].fromAyah;
+      const to = formData[0].toAyah;
+      const translationIdLocal = 37;
+      const translationIdEng = 149;
+      const convertFML = true;
+      const transLocal = [];
+      const transEnglish = [];
+
+      console.log(from, " to ", to);
+
+      for (var i = from; i <= to; i++) {
+        const verseKey = formData[0].surahName + ":" + i;
+        console.log();
+        const response = await fetch(
+          `https://api.quran.com/api/v4/quran/verses/code_v2?chapter_number=${formData[0].surahName}&verse_key=${verseKey}`
+        )
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            const glyph = data["verses"][0].code_v2;
+            const page = data["verses"][0].v2_page;
+
+            dispatch(generateActions.updateAyahKeys({ verseKey: verseKey, glyph: glyph }));
+            dispatch(generateActions.updateListOfAyah({ page: page, glyph: glyph }));
+          });
+
+        await fetch(`https://api.quran.com/api/v4/quran/translations/${translationIdLocal}?verse_key=${verseKey}`)
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            // console.log(convertToFML(response.data["translations"][0].text).replace('\n', '\​n'));
+            transLocal.push(
+              // convertFML //\n§Ä¡v \n§fpsS aXw. F\n¡v F³sd aXhpw.
+              //   ? convertToFML(data["translations"][0].text)
+              //       .replace(/\\n/g, "\\​n")
+              //       .replace(/{/g, "\\{")
+              //       .replace(/³sd/g, "sâ")
+              data["translations"][0].text
+            );
+          });
+
+        await fetch(`https://api.quran.com/api/v4/quran/translations/${translationIdEng}?verse_key=${verseKey}`)
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            // console.log(convertToFML(response.data["translations"][0].text).replace('\n', '\​n'));
+            transEnglish.push(data["translations"][0].text);
+          });
+      }
+      dispatch(generateActions.updateTransLocal(transLocal));
+      dispatch(generateActions.updateTransEnglish(transEnglish));
+    };
+
+    return fetchAyah();
   };
 };
