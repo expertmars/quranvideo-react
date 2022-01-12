@@ -2,7 +2,7 @@ import React from "react";
 import { url } from "socket.io-client/build/cjs/url";
 import Modal from "../UI/Modal";
 import ReactAudioPlayer from "react-audio-player";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import socketIO from "../hooks/socket";
 import styled from "styled-components";
@@ -12,6 +12,7 @@ import GlobalStyle from "./GlobalStyle";
 import Tag from "../UI/Tag";
 
 import { createGlobalStyle } from "styled-components";
+import { current } from "@reduxjs/toolkit";
 
 const AyahEditorModal = (props) => {
   const fromAyah = props.ayahs[1]; // 5
@@ -19,19 +20,25 @@ const AyahEditorModal = (props) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState("00:00.00");
-  const [splittingTime, setSplittingTime] = useState();
+  const [splittingCount, setSplittingCount] = useState(0);
+  const [splittingTimes, setSplittingTimes] = useState([]);
   const [currentDuration, setCurrentDuration] = useState("00:00.00");
   const [totalDuration, setTotalDuration] = useState("00:00.00");
 
   const engTrans = useSelector((state) => state.generate.engTrans);
   const localTrans = useSelector((state) => state.generate.localTrans);
   const glyph = useSelector((state) => state.generate.listOfAyah);
+  const ayahAudios = useSelector((state) => state.generate.ayahAudios);
 
-  console.log(glyph);
+  const [step, setStep] = useState(0);
 
   const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
 
   // console.log(fromAyah, toAyah);
+
+  useEffect(() => {
+    console.log(splittingTimes);
+  }, [splittingTimes]);
 
   const ayahNoHandler = (e) => {
     const index = e.target.selectedIndex;
@@ -85,8 +92,8 @@ const AyahEditorModal = (props) => {
 
   const rangeChangeHandler = (e) => {
     console.log(e.target.value);
-    player().currentTime = e.target.value;
-    setCurrentDuration(e.target.value);
+    player().currentTime = e.target.value / 10;
+    setCurrentDuration(e.target.value / 10);
   };
 
   const playAudio = () => {
@@ -98,11 +105,45 @@ const AyahEditorModal = (props) => {
 
   const onSplit = () => {
     player().pause();
-    setSplittingTime(currentTime);
+    setSplittingTimes((prevState) => {
+      const copiedArray = [...prevState];
+      copiedArray[splittingCount] = currentDuration;
+      return copiedArray;
+    });
+
+    /* 
+      [
+        {
+        currentTime: 00:22.23
+        currentDuration: 2.32432
+      },
+      {
+        currentTime: 00:22.23
+        currentDuration: 2.32432
+      }
+    ]
+
+    */
+  };
+
+  const resetSplit = () => {
+    setSplittingTimes([]);
+  };
+
+  const onNextStepHandler = () => {
+    if (step === 3) {
+      setSplittingCount((count) => count + 1);
+      return setStep(0);
+    }
+    setStep((state) => state + 1);
+  };
+
+  const onPreviousStepHandler = () => {
+    setStep((state) => state - 1);
   };
 
   const pagenum = `${Object.values(glyph)[currentAyahIndex]}`.padStart(3, "0");
-
+  console.log("ayahaydi", ayahAudios, glyph);
   return (
     <React.Fragment>
       {<Loading />}
@@ -110,102 +151,111 @@ const AyahEditorModal = (props) => {
       <Modal modalClass={"progresspopup ayahEditorPopup"} onClose={props.onClose}>
         <div className="progressBox">
           <h4 className="progressBox__text">AYAH EDITOR</h4>
+          {step === 0 && (
+            <>
+              <div className="form-group">
+                <label htmlFor="ayahNo" className="form-label">
+                  Select the ayah to edit
+                </label>
+                <select className="form-list" name="ayahNo" onChange={ayahNoHandler}>
+                  {optionsList}
+                </select>
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="ayahNo" className="form-label">
-              Select the ayah to edit
-            </label>
-            <select className="form-list" name="ayahNo" onChange={ayahNoHandler}>
-              {optionsList}
-            </select>
-          </div>
+              <div className="ayahPlayer">
+                <button className="btn" onClick={isPlaying ? pauseAudio : playAudio}>
+                  {isPlaying ? "Pause" : "Play"}
+                </button>
+                <button className="btn" onClick={onSplit}>
+                  Split
+                </button>
+                {splittingTimes.length > 0 && (
+                  <button className="btn" onClick={resetSplit}>
+                    Reset Split
+                  </button>
+                )}
+                <div className="slider">
+                  {splittingTimes && (
+                    <div className="markerdiv">
+                      {splittingTimes.map((splittime) => (
+                        <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}></div>
+                      ))}
+                    </div>
+                  )}
 
-          <div className="ayahPlayer">
-            <button className="btn" onClick={isPlaying ? pauseAudio : playAudio}>
-              {isPlaying ? "Pause" : "Play"}
-            </button>
-            <button className="btn" onClick={onSplit}>
-              Split
-            </button>
-            <div>
-              <input
-                type="range"
-                className="audioslider"
-                min="0"
-                max={totalDuration}
-                onChange={rangeChangeHandler}
-                value={currentDuration}></input>
-            </div>
-            <p>Current Time: {currentTime}</p>
-            {splittingTime && <p>Spliting At: {splittingTime}</p>}
+                  <input
+                    type="range"
+                    className="audioslider"
+                    min="0"
+                    max={totalDuration * 10}
+                    onChange={rangeChangeHandler}
+                    value={currentDuration * 10}></input>
+                </div>
+                {!splittingTimes[splittingCount] && <p>Current Time: {currentDuration}</p>}
 
-            {/* <audio
+                {splittingTimes[splittingCount] && <p>Spliting At: {splittingTimes[splittingCount]}</p>}
+
+                {/* <audio
             src="https://upload.wikimedia.org/wikipedia/commons/1/15/Bicycle-bell.wav"
             type="audio/ogg"
             controls
             autoPlay
           /> */}
-            <ReactAudioPlayer
-              className="react-player"
-              id="myAudio"
-              src="https://verses.quran.com/AbdulBaset/Mujawwad/mp3/002259.mp3"
-              onListen={onPlayHandler}
-              onPlay={onPlayerPlay}
-              onPause={onPlayerPause}
-              listenInterval={100}
-              autoPlay
-              onLoadedMetadata={onAudioFileLoaded}
-              controls
-              hidden
-            />
-            <button>Test</button>
+                <ReactAudioPlayer
+                  className="react-player"
+                  id="myAudio"
+                  src={Object.values(ayahAudios)[currentAyahIndex]}
+                  onListen={onPlayHandler}
+                  onPlay={onPlayerPlay}
+                  onPause={onPlayerPause}
+                  listenInterval={10}
+                  autoPlay
+                  onLoadedMetadata={onAudioFileLoaded}
+                  controls
+                  hidden
+                />
+              </div>
+            </>
+          )}
+
+          {/* ============================================================================================ */}
+          {/* ============================================================================================ */}
+          {/* ============================================================================================ */}
+
+          <div>
+            {step === 1 && (
+              <>
+                <h3>Arabic</h3>
+                <Tag defaultTags={[Object.keys(glyph)[currentAyahIndex]]} page={pagenum} arabic={true} />
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <h3>English</h3>
+                <Tag defaultTags={[engTrans[currentAyahIndex]]} arabic={false} />
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <h3>Local - Malayalam</h3>
+                <Tag defaultTags={[localTrans[currentAyahIndex]]} arabic={false} />
+              </>
+            )}
+            {splittingTimes[splittingCount] && (
+              <>
+                {step >= 1 && (
+                  <button className="btn" onClick={onPreviousStepHandler}>
+                    Back
+                  </button>
+                )}
+                <button className="btn" onClick={onNextStepHandler}>
+                  Next
+                </button>
+              </>
+            )}
           </div>
-
-          {/* ============================================================================================ */}
-          {/* ============================================================================================ */}
-          {/* ============================================================================================ */}
-
-          <div className="form-group">
-            <label htmlFor="resolution" className="form-label">
-              Arabic
-            </label>
-            {/* <textarea
-              className="form-text-ayaheditor"
-              style={{
-                fontFamily: `QCF2${pagenum}`,
-                fontSize: 30,
-              }}
-              id="arabText"
-              //defaultValue={Object.keys(glyph)[currentAyahIndex]}
-              defaultValue='<div>
-              <span class="test1">Hello world!</span> <span class="test2">How are you</span>
-            </div>'></textarea> */}
-            <Tag defaultTags={[Object.keys(glyph)[currentAyahIndex]]} page={pagenum} arabic={true} />
-          </div>
-          <h3>English</h3>
-          <Tag defaultTags={[engTrans[currentAyahIndex]]} arabic={false} />
-          {/* <div className="form-group">
-            
-            <textarea
-              className="form-text-ayaheditor"
-              id="english"
-              defaultValue={}></textarea>
-          </div> */}
-
-          <h3>Local - Malayalam</h3>
-          <Tag defaultTags={[localTrans[currentAyahIndex]]} arabic={false} />
-
-          {/* <div className="form-group">
-            <label htmlFor="local" className="form-label">
-              Local Translation (Malayalam)
-            </label>
-            <textarea
-              className="form-text-ayaheditor"
-              id="local"
-              defaultValue={localTrans[currentAyahIndex]}></textarea>
-          </div> */}
-
-          {/* {status === "Video processed successfully" && <button onClick={onClickDownload}>Download</button>} */}
         </div>
       </Modal>
       <GlobalStyle />

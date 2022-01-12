@@ -142,6 +142,15 @@ export default function Tag(props) {
 
   return (
     <>
+      {tags.length < 2 && (
+        <h3 className={classes.infoText}>
+          <span>
+            <img src="https://img.icons8.com/windows/32/000000/info.png" width={16} />
+          </span>
+          &nbsp; Select where the 00:22:32 is in the below
+        </h3>
+      )}
+
       <div
         className={classes.tageditor}
         style={
@@ -156,6 +165,7 @@ export default function Tag(props) {
           }}>
           Test
         </button> */}
+
         <ul>
           {tags.map((tag, index) =>
             index === editing ? (

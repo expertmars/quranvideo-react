@@ -37,6 +37,33 @@ select {
   /* font-size: 1rem; */
 }
 
+input[type="range"] {
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
+.slider {
+  display: block;
+}
+
+.markerdiv {
+  width: 69%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 10px;
+  position: relative;
+}
+
+.marker {
+  width: 3px;
+  height: 20px;
+  background-color: red;
+
+  position: absolute;
+  left: 100%;
+}
+
 .form-group input {
   width: 8.4rem;
   height: 5rem;

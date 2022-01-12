@@ -28,8 +28,9 @@ const generateSlice = createSlice({
     generatedRecitors: [],
 
     // Fetch Ayah - (generate-actions.js)
-    ayahKeys: {},
-    listOfAyah: {},
+    ayahKeys: {}, // ayahKey: glyph
+    listOfAyah: {}, // glyph : page
+    ayahAudios: {}, // ayahkey : audio url
     localTrans: [],
     engTrans: [],
   },
@@ -69,6 +70,13 @@ const generateSlice = createSlice({
       const glyph = action.payload.glyph;
       console.log(verseKey, glyph);
       state.ayahKeys[verseKey] = glyph;
+    },
+
+    updateAyahAudios(state, action) {
+      const url = action.payload.url;
+      const verseKey = action.payload.verseKey;
+      console.log(verseKey, url);
+      state.ayahAudios[verseKey] = url;
     },
 
     updateListOfAyah(state, action) {

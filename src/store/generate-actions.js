@@ -190,12 +190,23 @@ export const fetchAyahData = (formData, ayahKeys) => {
       const convertFML = true;
       const transLocal = [];
       const transEnglish = [];
+      const api = "https://verses.quran.com/";
 
       console.log(from, " to ", to);
 
       for (var i = from; i <= to; i++) {
         const verseKey = formData[0].surahName + ":" + i;
-        console.log();
+
+        await fetch(`https://api.quran.com/api/v4/recitations/7/by_ayah/${verseKey}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            const url = api + data["audio_files"][0].url;
+
+            dispatch(generateActions.updateAyahAudios({ verseKey: verseKey, url: url }));
+          });
+
         const response = await fetch(
           `https://api.quran.com/api/v4/quran/verses/code_v2?chapter_number=${formData[0].surahName}&verse_key=${verseKey}`
         )
