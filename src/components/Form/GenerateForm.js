@@ -17,6 +17,7 @@ import {
 import { generateActions } from "../../store/generate-slice";
 
 import socketIO from "../hooks/socket";
+import Loading from "../UI/Loading";
 
 const GenerateForm = () => {
   const userData = useSelector((state) => state.auth.userData);
@@ -50,6 +51,9 @@ const GenerateForm = () => {
 
   const showProgressModal = useSelector((state) => state.ui.progressModalIsVisible);
   const showAyahEditorModal = useSelector((state) => state.ui.ayahEditorIsVisible);
+
+  const showLoading = useSelector((state) => state.ui.showLoading);
+  // const showAyahEditorModal = useSelector((state) => state.ui.ayahEditorIsVisible);
 
   const videoPage = useSelector((state) => state.generate.videoPage);
   const videoQuery = useSelector((state) => state.generate.videoQuery);
@@ -137,7 +141,8 @@ const GenerateForm = () => {
     });
 
     socket.on("onAyahEditorLoad", (data) => {
-      dispatch(uiActions.showAyahEditorModal());
+      dispatch(uiActions.showLoading());
+      // dispatch(uiActions.showAyahEditorModal());
 
       console.log(data);
     });
@@ -149,7 +154,10 @@ const GenerateForm = () => {
 
   return (
     <React.Fragment>
-      {showAyahEditorModal && <AyahEditorModal onClose={hideAyahEditor} ayahs={[formData.toAyah, formData.fromAyah]} />}
+      {showLoading && <Loading>LOADING</Loading>}
+      {showAyahEditorModal && !showLoading && (
+        <AyahEditorModal onClose={hideAyahEditor} ayahs={[formData.toAyah, formData.fromAyah]} />
+      )}
       {showProgressModal && <ProgressModal />}
       {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
       <div className="editor">

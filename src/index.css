@@ -578,6 +578,21 @@ HTML CSSResult Skip Results Iframe * {
   background-color: rgb(255, 255, 255);
 }
 
+.loadingPopup {
+  border: 1px solid #0003;
+  border-radius: 10px;
+  position: absolute;
+  padding: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* height: 20vh; */
+  margin: auto;
+  z-index: 100;
+  background-color: rgb(255, 255, 255);
+}
+
 .ayahEditorPopup {
   /* height: 70vh; */
 }

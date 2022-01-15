@@ -6,7 +6,7 @@ const expiry = new Date(userData.expireOn);
 const timenow = new Date();
 
 if (timenow > expiry) {
-  userData = null;
+  // userData = null;
 }
 
 const authSlice = createSlice({

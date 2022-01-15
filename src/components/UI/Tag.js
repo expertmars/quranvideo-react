@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import classes from "./Tag.module.css";
+import { useSelector, useDispatch } from "react-redux";
+import { generateActions } from "../../store/generate-slice";
+import { current } from "@reduxjs/toolkit";
 
 export default function Tag(props) {
+  const dispatch = useDispatch();
+
   const [valueTags, setValueTags] = useState();
   const [inputRef, setInputRef] = useState();
   const [splittingAt, setSplittingAt] = useState();
@@ -9,6 +14,8 @@ export default function Tag(props) {
   const [tags, setTags] = useState(["hello", "world"]);
   const [unChangedTags, setUnChangedTags] = useState();
   const [editing, setEditing] = useState(); // 0, 1, 2
+
+  // const tags = useSelector((state) => state.generate.arab);
 
   useEffect(() => {
     setTags(props.defaultTags);
@@ -28,13 +35,15 @@ export default function Tag(props) {
     if (e.key === "Enter") {
       e.preventDefault();
       if (editing == null) {
-        setTags((prevState) => [...prevState, valueTags]);
+        // setTags((prevState) => [...prevState, valueTags]);
+        console.log("this feature is removed");
       } else {
-        setTags((prevState) => {
-          const tagsNow = [...prevState];
-          tagsNow.splice(editing, 1, valueTags);
-          return tagsNow;
-        });
+        // setTags((prevState) => {
+        //   const tagsNow = [...prevState];
+        //   tagsNow.splice(editing, 1, valueTags);
+        //   return tagsNow;
+        // });
+        console.log("this feature is removed");
       }
       setValueTags("");
 
@@ -107,6 +116,7 @@ export default function Tag(props) {
     // const secondPart = valueTags.substring(splittingAt, length);
 
     const res = valueTags.substring(0, splittingAt) + "|" + valueTags.substring(splittingAt, length);
+    console.log(res + " =============================================================================================");
 
     // const res = "fd|sf";
     const splitted = res.split("|");
@@ -121,13 +131,25 @@ export default function Tag(props) {
     //  console.log(splitted);
 
     setEditing(); // This will stop editing.
-    setTags((prevState) => {
-      const tagsNow = [...prevState];
-      console.log("EDING", editing);
-      tagsNow.splice(editing, 1, ...splitted); // splice(0)
-      console.log(tagsNow);
-      return tagsNow;
-    });
+
+    const tagsNow = [...tags];
+
+    tagsNow.splice(editing, 1, ...splitted); // splice(0)
+
+    console.log(tagsNow);
+
+    props.mode === "arab" && dispatch(generateActions.splitArab({ tags: tagsNow, index: props.currentIndex }));
+    props.mode === "english" && dispatch(generateActions.splitEng({ tags: tagsNow, index: props.currentIndex }));
+    props.mode === "local" && dispatch(generateActions.splitLocal({ tags: tagsNow, index: props.currentIndex }));
+
+    // setTags((prevState) => {
+    //   const tagsNow = [...prevState];
+    //   console.log("EDING", editing);
+    //   tagsNow.splice(editing, 1, ...splitted); // splice(0)
+    //   console.log(tagsNow);
+
+    //   return tagsNow;
+    // });
 
     resetData();
 
@@ -136,7 +158,10 @@ export default function Tag(props) {
   };
 
   const resetHandler = () => {
-    setTags(unChangedTags);
+    // setTags(unChangedTags);
+    // dispatch(generateActions.updateArab([]));
+    console.log("this working?");
+    dispatch(generateActions.resetSplit({ mode: props.mode, index: props.currentIndex }));
     setSplittingAt();
   };
 

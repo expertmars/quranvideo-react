@@ -1,4 +1,6 @@
 import { generateActions } from "./generate-slice";
+import { uiActions } from "./ui-slice";
+
 import socketIO from "../components/hooks/socket";
 import convertToFML from "../store/converter";
 
@@ -194,8 +196,13 @@ export const fetchAyahData = (formData, ayahKeys) => {
 
       console.log(from, " to ", to);
 
+      let ayahIndex = 0;
+
+      const promises = [];
+
       for (var i = from; i <= to; i++) {
         const verseKey = formData[0].surahName + ":" + i;
+        console.log(i);
 
         await fetch(`https://api.quran.com/api/v4/recitations/7/by_ayah/${verseKey}`)
           .then((res) => {
@@ -204,10 +211,12 @@ export const fetchAyahData = (formData, ayahKeys) => {
           .then((data) => {
             const url = api + data["audio_files"][0].url;
 
-            dispatch(generateActions.updateAyahAudios({ verseKey: verseKey, url: url }));
+            dispatch(generateActions.updateAyahEditor({ task: "audio", value: url, index: ayahIndex }));
+
+            console.log("RESOLVING AUDIO");
           });
 
-        const response = await fetch(
+        await fetch(
           `https://api.quran.com/api/v4/quran/verses/code_v2?chapter_number=${formData[0].surahName}&verse_key=${verseKey}`
         )
           .then((res) => {
@@ -217,8 +226,15 @@ export const fetchAyahData = (formData, ayahKeys) => {
             const glyph = data["verses"][0].code_v2;
             const page = data["verses"][0].v2_page;
 
-            dispatch(generateActions.updateAyahKeys({ verseKey: verseKey, glyph: glyph }));
-            dispatch(generateActions.updateListOfAyah({ page: page, glyph: glyph }));
+            // dispatch(generateActions.updateAyahKeys({ verseKey: verseKey, glyph: glyph }));
+            // dispatch(generateActions.updateListOfAyah({ page: page, glyph: glyph }));
+            // dispatch(generateActions.updateArab([glyph]));
+
+            dispatch(generateActions.updateAyahEditor({ task: "arab", value: glyph, index: ayahIndex }));
+            dispatch(generateActions.updateAyahEditor({ task: "ayahKey", value: verseKey, index: ayahIndex }));
+            dispatch(generateActions.updateAyahEditor({ task: "page", value: page, index: ayahIndex }));
+
+            console.log("RESOLVING ARAB");
           });
 
         await fetch(`https://api.quran.com/api/v4/quran/translations/${translationIdLocal}?verse_key=${verseKey}`)
@@ -227,14 +243,16 @@ export const fetchAyahData = (formData, ayahKeys) => {
           })
           .then((data) => {
             // console.log(convertToFML(response.data["translations"][0].text).replace('\n', '\​n'));
-            transLocal.push(
-              // convertFML //\n§Ä¡v \n§fpsS aXw. F\n¡v F³sd aXhpw.
-              //   ? convertToFML(data["translations"][0].text)
-              //       .replace(/\\n/g, "\\​n")
-              //       .replace(/{/g, "\\{")
-              //       .replace(/³sd/g, "sâ")
-              data["translations"][0].text
+            // transLocal.push([data["translations"][0].text]);
+            dispatch(
+              generateActions.updateAyahEditor({
+                task: "local",
+                value: data["translations"][0].text,
+                index: ayahIndex,
+              })
             );
+
+            console.log("RESOLVING LOCAL TRANS");
           });
 
         await fetch(`https://api.quran.com/api/v4/quran/translations/${translationIdEng}?verse_key=${verseKey}`)
@@ -243,11 +261,35 @@ export const fetchAyahData = (formData, ayahKeys) => {
           })
           .then((data) => {
             // console.log(convertToFML(response.data["translations"][0].text).replace('\n', '\​n'));
-            transEnglish.push(data["translations"][0].text);
+            // transEnglish.push([data["translations"][0].text]);
+            dispatch(
+              generateActions.updateAyahEditor({
+                task: "eng",
+                value: data["translations"][0].text,
+                index: ayahIndex,
+              })
+            );
+
+            console.log("RESOLVING ENG TRANS");
           });
+
+        ayahIndex++;
       }
-      dispatch(generateActions.updateTransLocal(transLocal));
-      dispatch(generateActions.updateTransEnglish(transEnglish));
+
+      // Promise.all(promises)
+      //   .then((result) => {
+      dispatch(uiActions.hideLoading());
+      //     console.log("ALL RESOLVED ============");
+      //     setTimeout(() => {
+      dispatch(uiActions.showAyahEditorModal());
+      //     }, 10000);
+      //   })
+      //   .catch((err) => {
+      //     console.log("something went wrong");
+      //   });
+
+      // dispatch(generateActions.updateTransEnglish(transEnglish));
+      // dispatch(generateActions.updateTransLocal(transLocal));
     };
 
     return fetchAyah();

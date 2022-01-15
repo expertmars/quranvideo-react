@@ -15,6 +15,7 @@ const Form = (props) => {
   const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
   const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
   const generateForm = useSelector((state) => state.generate.generateForm);
+  const ayahEditor = useSelector((state) => state.generate.ayahEditor);
 
   const surahRefChangeHandler = (e) => {
     const index = e.target.selectedIndex;
@@ -36,7 +37,12 @@ const Form = (props) => {
 
   const showEditorHandler = () => {
     dispatch(generateActions.updateEditButtonIsClicked());
-    dispatch(uiActions.showAyahEditorModal());
+    // dispatch(uiActions.showAyahEditorModal());
+    if (!ayahEditor.length > 0) {
+      dispatch(uiActions.showLoading());
+    } else {
+      dispatch(uiActions.showAyahEditorModal());
+    }
   };
 
   return (

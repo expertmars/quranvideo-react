@@ -3,7 +3,7 @@ import { url } from "socket.io-client/build/cjs/url";
 import Modal from "../UI/Modal";
 import ReactAudioPlayer from "react-audio-player";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import socketIO from "../hooks/socket";
 import styled from "styled-components";
 import Loading from "../UI/Loading";
@@ -11,34 +11,31 @@ import GlobalStyle from "./GlobalStyle";
 
 import Tag from "../UI/Tag";
 
-import { createGlobalStyle } from "styled-components";
-import { current } from "@reduxjs/toolkit";
+import { generateActions } from "../../store/generate-slice";
 
 const AyahEditorModal = (props) => {
+  const dispatch = useDispatch();
+
   const fromAyah = props.ayahs[1]; // 5
   const toAyah = props.ayahs[0]; // 10
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState("00:00.00");
-  const [splittingCount, setSplittingCount] = useState(0);
-  const [splittingTimes, setSplittingTimes] = useState([]);
+
   const [currentDuration, setCurrentDuration] = useState("00:00.00");
   const [totalDuration, setTotalDuration] = useState("00:00.00");
 
-  const engTrans = useSelector((state) => state.generate.engTrans);
-  const localTrans = useSelector((state) => state.generate.localTrans);
-  const glyph = useSelector((state) => state.generate.listOfAyah);
-  const ayahAudios = useSelector((state) => state.generate.ayahAudios);
+  const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
+
+  const editingAyah = useSelector((state) => state.generate.ayahEditor[currentAyahIndex]);
+  const splitTimes = editingAyah.splitTimes;
 
   const [step, setStep] = useState(0);
-
-  const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
 
   // console.log(fromAyah, toAyah);
 
   useEffect(() => {
-    console.log(splittingTimes);
-  }, [splittingTimes]);
+    console.log(editingAyah.splitTimes);
+  }, [editingAyah.splitTimes]);
 
   const ayahNoHandler = (e) => {
     const index = e.target.selectedIndex;
@@ -74,7 +71,6 @@ const AyahEditorModal = (props) => {
   const onPlayHandler = (e) => {
     setCurrentDuration(e);
     const time = new Date(e * 1000).toISOString().substr(14, 8);
-    setCurrentTime(time);
   };
 
   const onPlayerPlay = (e) => {
@@ -105,36 +101,31 @@ const AyahEditorModal = (props) => {
 
   const onSplit = () => {
     player().pause();
-    setSplittingTimes((prevState) => {
-      const copiedArray = [...prevState];
-      copiedArray[splittingCount] = currentDuration;
-      return copiedArray;
-    });
-
-    /* 
-      [
-        {
-        currentTime: 00:22.23
-        currentDuration: 2.32432
-      },
-      {
-        currentTime: 00:22.23
-        currentDuration: 2.32432
-      }
-    ]
-
-    */
+    dispatch(
+      generateActions.updateAyahEditor({ task: "updateSplitTime", value: currentDuration, index: currentAyahIndex })
+    );
   };
 
   const resetSplit = () => {
-    setSplittingTimes([]);
+    // dispatch(generateActions.updateAyahEditor({ task: "resetSplitTimes", index: currentAyahIndex }));
+    dispatch(generateActions.resetAllSplit({ index: currentAyahIndex }));
   };
 
   const onNextStepHandler = () => {
+    let currentTag;
+
+    if (step === 1) {
+    } else if (step === 2) {
+    } else if (step === 3) {
+    } else {
+      console.log("step 0 detected");
+    }
+
     if (step === 3) {
-      setSplittingCount((count) => count + 1);
+      dispatch(generateActions.updateAyahEditor({ task: "IncreaseSplitCount", index: currentAyahIndex }));
       return setStep(0);
     }
+
     setStep((state) => state + 1);
   };
 
@@ -142,8 +133,8 @@ const AyahEditorModal = (props) => {
     setStep((state) => state - 1);
   };
 
-  const pagenum = `${Object.values(glyph)[currentAyahIndex]}`.padStart(3, "0");
-  console.log("ayahaydi", ayahAudios, glyph);
+  const pagenum = `${editingAyah.page}`.padStart(3, "0");
+
   return (
     <React.Fragment>
       {<Loading />}
@@ -169,15 +160,16 @@ const AyahEditorModal = (props) => {
                 <button className="btn" onClick={onSplit}>
                   Split
                 </button>
-                {splittingTimes.length > 0 && (
+
+                {splitTimes.length > 0 && (
                   <button className="btn" onClick={resetSplit}>
-                    Reset Split
+                    Reset All Split
                   </button>
                 )}
                 <div className="slider">
-                  {splittingTimes && (
+                  {splitTimes && (
                     <div className="markerdiv">
-                      {splittingTimes.map((splittime) => (
+                      {splitTimes.map((splittime) => (
                         <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}></div>
                       ))}
                     </div>
@@ -191,9 +183,11 @@ const AyahEditorModal = (props) => {
                     onChange={rangeChangeHandler}
                     value={currentDuration * 10}></input>
                 </div>
-                {!splittingTimes[splittingCount] && <p>Current Time: {currentDuration}</p>}
+                {!editingAyah.splitTimes[editingAyah.splitCount] && <p>Current Time: {currentDuration}</p>}
 
-                {splittingTimes[splittingCount] && <p>Spliting At: {splittingTimes[splittingCount]}</p>}
+                {editingAyah.splitTimes[editingAyah.splitCount] && (
+                  <p>Spliting At: {editingAyah.splitTimes[editingAyah.splitCount]}</p>
+                )}
 
                 {/* <audio
             src="https://upload.wikimedia.org/wikipedia/commons/1/15/Bicycle-bell.wav"
@@ -204,7 +198,7 @@ const AyahEditorModal = (props) => {
                 <ReactAudioPlayer
                   className="react-player"
                   id="myAudio"
-                  src={Object.values(ayahAudios)[currentAyahIndex]}
+                  src={editingAyah.audio}
                   onListen={onPlayHandler}
                   onPlay={onPlayerPlay}
                   onPause={onPlayerPause}
@@ -219,31 +213,47 @@ const AyahEditorModal = (props) => {
           )}
 
           {/* ============================================================================================ */}
-          {/* ============================================================================================ */}
+          {/* ============================
+          
+          arab = [
+            ['aya','h 1'],
+            ['ayah 2'],
+            ['ayah 3'],
+
+          ]
+          
+          ====================================== */}
           {/* ============================================================================================ */}
 
           <div>
             {step === 1 && (
               <>
                 <h3>Arabic</h3>
-                <Tag defaultTags={[Object.keys(glyph)[currentAyahIndex]]} page={pagenum} arabic={true} />
+                <Tag
+                  defaultTags={editingAyah.arab}
+                  page={pagenum}
+                  arabic={true}
+                  currentIndex={currentAyahIndex}
+                  mode="arab"
+                />
               </>
             )}
 
             {step === 2 && (
               <>
                 <h3>English</h3>
-                <Tag defaultTags={[engTrans[currentAyahIndex]]} arabic={false} />
+
+                <Tag defaultTags={editingAyah.eng} arabic={false} currentIndex={currentAyahIndex} mode="english" />
               </>
             )}
 
             {step === 3 && (
               <>
                 <h3>Local - Malayalam</h3>
-                <Tag defaultTags={[localTrans[currentAyahIndex]]} arabic={false} />
+                <Tag defaultTags={editingAyah.local} currentIndex={currentAyahIndex} arabic={false} mode="local" />
               </>
             )}
-            {splittingTimes[splittingCount] && (
+            {editingAyah.splitTimes[editingAyah.splitCount] && (
               <>
                 {step >= 1 && (
                   <button className="btn" onClick={onPreviousStepHandler}>

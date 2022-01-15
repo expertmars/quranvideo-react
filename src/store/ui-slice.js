@@ -9,6 +9,7 @@ const uiInitialState = {
 
   progressModalIsVisible: false,
   ayahEditorIsVisible: false,
+  showLoading: false,
 };
 
 const uiSlice = createSlice({
@@ -60,6 +61,12 @@ const uiSlice = createSlice({
 
     hideAyahEditorModal(state, action) {
       state.ayahEditorIsVisible = false;
+    },
+    showLoading(state, action) {
+      state.showLoading = true;
+    },
+    hideLoading(state, action) {
+      state.showLoading = false;
     },
   },
 });

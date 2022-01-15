@@ -33,6 +33,46 @@ const generateSlice = createSlice({
     ayahAudios: {}, // ayahkey : audio url
     localTrans: [],
     engTrans: [],
+    arab: [],
+    splittingTimes: [],
+    /* 
+      Splitting time structure.
+      [
+       0:  [2.30, 2.34, 2.45],
+       1:  [2.50, 2.54, 2.56],
+       2:  [2.61, 2.62, 2.66],
+        
+      ]
+    */
+    unChangedArab: [],
+    unChangedLocal: [],
+    unChangedEnglish: [],
+
+    // REDESIGN OF THE AYAHEDITOR
+    ayahCount: 0,
+    ayahEditor: [
+      /*
+        {ayah1},
+        {
+          pageNo: 233,
+          ayahKey: '113:4',
+          audio: 'verses.quran.com/mp3/3233.mp3',
+          arab: ['ﮐ ﮑ ﮒ' ,'ﮓ ﮔ ﮕ'],
+          eng: ['The most merciful', 'and the most powerful'],
+          local: ['എന്തൊക്കെ' ,'ഉണ്ട് വിശീശ്മ'],
+          unchanged: {
+            arab: ['ﮐ ﮑ ﮒ ﮓ ﮔ ﮕ'],
+            eng: ['The most merciful and the most powerful'],
+            local: ['എന്തൊക്കെ ഉണ്ട് വിശീശ്മ'],
+          },
+          splitTimes: [1.26, 2.36, 2.44],
+          splittingCount: 3
+        },
+        {ayah3},
+
+
+      */
+    ],
   },
   reducers: {
     // GenerateForm
@@ -64,6 +104,90 @@ const generateSlice = createSlice({
       state.submissionButton = true;
     },
 
+    updateAyahEditor(state, action) {
+      try {
+        const ayahIndex = action.payload.index;
+        const value = action.payload.value;
+
+        if (action.payload.task === "page") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            page: value,
+          };
+        } else if (action.payload.task === "ayahKey") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            ayahKey: value,
+          };
+        } else if (action.payload.task === "audio") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            audio: value,
+          };
+        } else if (action.payload.task === "arab") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            arab: [value],
+            unchanged: {
+              ...state.ayahEditor[ayahIndex].unchanged,
+              arab: [value],
+            },
+            splitTimes: [],
+            splitCount: 0,
+          };
+          state.ayahCount++;
+        } else if (action.payload.task === "eng") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            eng: [value],
+            unchanged: {
+              ...state.ayahEditor[ayahIndex].unchanged,
+              eng: [value],
+            },
+          };
+        } else if (action.payload.task === "local") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            local: [value],
+            unchanged: {
+              ...state.ayahEditor[ayahIndex].unchanged,
+              local: [value],
+            },
+          };
+        } else if (action.payload.task === "updateSplitTime") {
+          const currentSplitTimeArray = state.ayahEditor[ayahIndex].splitTimes;
+          currentSplitTimeArray[state.ayahEditor[ayahIndex].splitCount] = value;
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            splitTimes: currentSplitTimeArray, // add the new split second to the array.
+            // splitCount: state.ayahEditor[ayahIndex].splitCount + 1, // Increase split count by 1
+          };
+        } else if (action.payload.task === "IncreaseSplitCount") {
+          state.ayahEditor[ayahIndex] = {
+            ...state.ayahEditor[ayahIndex],
+            splitCount: state.ayahEditor[ayahIndex].splitCount + 1,
+          };
+        } else {
+          throw new Error("NO AYAH EDITING TASK IS MATCHING");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    resetAllSplit(state, action) {
+      const ayahIndex = action.payload.index;
+
+      state.ayahEditor[ayahIndex] = {
+        ...state.ayahEditor[ayahIndex],
+        arab: state.ayahEditor[ayahIndex].unchanged.arab,
+        eng: state.ayahEditor[ayahIndex].unchanged.eng,
+        local: state.ayahEditor[ayahIndex].unchanged.local,
+        splitTimes: [],
+        splitCount: 0,
+      };
+    },
+
     // Fetch Ayah - (generate-actions.js)
     updateAyahKeys(state, action) {
       const verseKey = action.payload.verseKey;
@@ -89,16 +213,90 @@ const generateSlice = createSlice({
     resetAyahKeysAndListOfAyah(state, action) {
       state.listOfAyah = {};
       state.ayahKeys = {};
+      state.arab = [];
     },
 
     updateTransLocal(state, action) {
       const loadedTrans = action.payload;
       state.localTrans = loadedTrans;
+      //Unchanged
+      state.unChangedLocal = loadedTrans;
     },
 
     updateTransEnglish(state, action) {
       const loadedTrans = action.payload;
       state.engTrans = loadedTrans;
+      //Unchanged
+      state.unChangedEnglish = loadedTrans;
+    },
+
+    updateEnglish(state, action) {
+      const loadedEng = action.payload;
+      return {
+        ...state,
+        engTrans: [...state.engTrans, [...loadedEng]],
+      };
+    },
+
+    splitEng(state, action) {
+      const ayahIndex = action.payload.index;
+
+      const tags = action.payload.tags;
+
+      state.ayahEditor[ayahIndex] = {
+        ...state.ayahEditor[ayahIndex],
+        eng: tags,
+      };
+    },
+
+    updateLocal(state, action) {
+      const loadedLocal = action.payload;
+      return {
+        ...state,
+        localTrans: [...state.localTrans, [...loadedLocal]],
+      };
+    },
+
+    splitLocal(state, action) {
+      const ayahIndex = action.payload.index;
+
+      const tags = action.payload.tags;
+
+      state.ayahEditor[ayahIndex] = {
+        ...state.ayahEditor[ayahIndex],
+        local: tags,
+      };
+    },
+
+    updateArab(state, action) {
+      const loadedArab = action.payload;
+      return {
+        ...state,
+        arab: [...state.arab, [...loadedArab]],
+        //unchanged
+        unChangedArab: [...state.arab, [...loadedArab]],
+      };
+    },
+
+    splitArab(state, action) {
+      const ayahIndex = action.payload.index;
+
+      const tags = action.payload.tags;
+
+      state.ayahEditor[ayahIndex] = {
+        ...state.ayahEditor[ayahIndex],
+        arab: tags,
+      };
+    },
+
+    updateSplittingTime(state, action) {
+      const currentIndex = action.payload.index;
+      const time = action.payload.time;
+      if (state.splittingTimes[currentIndex] == null) {
+        state.splittingTimes[currentIndex] = [time];
+      } else {
+        state.splittingTimes[currentIndex] = [...state.splittingTimes[currentIndex], time];
+      }
     },
 
     // Photo - (ChooseVideoCard)
