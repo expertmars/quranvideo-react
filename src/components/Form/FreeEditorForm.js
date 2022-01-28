@@ -4,7 +4,7 @@ import generateSlice, { generateActions } from "../../store/generate-slice";
 import { uiActions } from "../../store/ui-slice";
 
 // import { useSelector, useDispatch } from "react-redux";
-import { startGenerateVideoData } from "../../store/generate-actions";
+import { fetchAyahData, startGenerateVideoData } from "../../store/generate-actions";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
@@ -15,6 +15,9 @@ const Form = (props) => {
   const selectedSurahVerseCount = useSelector((state) => state.generate.selectedSurahVerseCount);
   const generatedRecitors = useSelector((state) => state.generate.generatedRecitors);
   const generateForm = useSelector((state) => state.generate.generateForm);
+  const editForm = useSelector((state) => state.generate.editForm);
+  const transList = useSelector((state) => state.generate.transList);
+
   const ayahEditor = useSelector((state) => state.generate.ayahEditor);
 
   const surahRefChangeHandler = (e) => {
@@ -36,8 +39,7 @@ const Form = (props) => {
   };
 
   const showEditorHandler = () => {
-    dispatch(generateActions.updateEditButtonIsClicked());
-    // dispatch(uiActions.showAyahEditorModal());
+    dispatch(generateActions.editButtonIsClicked());
     if (!ayahEditor.length > 0) {
       dispatch(uiActions.showLoading());
     } else {
@@ -107,17 +109,42 @@ const Form = (props) => {
           </div>
           <div className="form-group">
             <label htmlFor="translation" className="form-label">
-              Translation
+              Local Translation
             </label>
-            <select className="form-list" name="translation" onChange={props.onChangeHandler}>
-              <option value={37} className="form-list-item">
-                Malayalam - Abdul Hameed and Kunhi Mohammed
-              </option>
-              <option value={80} className="form-list-item">
-                Malayalam - Muhammad Karakunnu and Vanidas Elayavoor
-              </option>
+            <select className="form-list" name="localTranslation" onChange={props.onChangeHandler}>
+              {transList.map((item) => {
+                if (item.language_name !== "english")
+                  return item.id == 37 ? (
+                    <option value={parseInt(item.id)} selected="selected" className="form-list-item">
+                      {item.language_name.toUpperCase()} - {item.name}
+                    </option>
+                  ) : (
+                    <option value={parseInt(item.id)} className="form-list-item">
+                      {item.language_name.toUpperCase()} - {item.name}
+                    </option>
+                  );
+              })}
             </select>
           </div>
+
+          <div className="form-group">
+            <label htmlFor="translation" className="form-label">
+              English Translation
+            </label>
+            <select className="form-list" name="englishTranslation" onChange={props.onChangeHandler}>
+              {transList.map((item) => {
+                if (item.language_name === "english") {
+                  const sel = item.id == 203 ? "selected" : "";
+                  return (
+                    <option value={parseInt(item.id)} selected={sel} className="form-list-item">
+                      {item.language_name.toUpperCase()} - {item.name}
+                    </option>
+                  );
+                }
+              })}
+            </select>
+          </div>
+
           <div className="form-group">
             <label htmlFor="#" className="form-label">
               Background Videos
@@ -184,7 +211,7 @@ const Form = (props) => {
               type="checkbox"
               defaultChecked
               id="arabic-meaning"
-              name="showArabicMeaning"
+              name="showArabic"
               className="form-checkbox"
               onChange={props.onChangeHandler}
             />

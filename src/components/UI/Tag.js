@@ -158,21 +158,28 @@ export default function Tag(props) {
   };
 
   const resetHandler = () => {
-    // setTags(unChangedTags);
-    // dispatch(generateActions.updateArab([]));
     console.log("this working?");
-    dispatch(generateActions.resetSplit({ mode: props.mode, index: props.currentIndex }));
+    // dispatch(generateActions.resetSplit({ mode: props.mode, index: props.currentIndex }));
+    props.mode === "arab" &&
+      dispatch(generateActions.resetSplit({ mode: "arab", value: props.lastTags.arab, index: props.currentIndex }));
+    props.mode === "english" &&
+      dispatch(generateActions.resetSplit({ mode: "eng", value: props.lastTags.eng, index: props.currentIndex }));
+    props.mode === "local" &&
+      dispatch(generateActions.resetSplit({ mode: "local", value: props.lastTags.local, index: props.currentIndex }));
+
     setSplittingAt();
   };
 
+  const isSplitAvailable = tags.length <= props.splits.length;
+
   return (
     <>
-      {tags.length < 2 && (
+      {isSplitAvailable && (
         <h3 className={classes.infoText}>
           <span>
             <img src="https://img.icons8.com/windows/32/000000/info.png" width={16} />
           </span>
-          &nbsp; Select where the 00:22:32 is in the below
+          &nbsp; Select where the {props.splits[props.splitCount]} is in the below
         </h3>
       )}
 
@@ -226,12 +233,16 @@ export default function Tag(props) {
       </div>
 
       <div>
-        <button className={"btn"} onClick={splitHandler}>
-          Split At Caret
-        </button>
-        <button className={"btn"} onClick={resetHandler}>
-          Reset
-        </button>
+        {isSplitAvailable && (
+          <button className={"btn"} onClick={splitHandler}>
+            Split At Caret
+          </button>
+        )}
+        {isSplitAvailable && (
+          <button className={"btn"} onClick={resetHandler}>
+            Undo Split
+          </button>
+        )}
       </div>
     </>
   );

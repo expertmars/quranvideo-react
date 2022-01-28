@@ -5,6 +5,7 @@ import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
 import ProgressModal from "./ProgressModal";
+import { fetchAyah, fetchTranslationList } from "../../store/generate-actions";
 import AyahEditorModal from "./AyahEditorModal";
 
 import {
@@ -21,6 +22,7 @@ import Loading from "../UI/Loading";
 
 const GenerateForm = () => {
   const userData = useSelector((state) => state.auth.userData);
+  const ayahEditor = useSelector((state) => state.generate.ayahEditor);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -29,24 +31,63 @@ const GenerateForm = () => {
     layout: 1,
     recitor: 7,
     resolution: "720x1080",
-    showArabicMeaning: true,
+    showArabic: true,
     showEnglishMeaning: true,
     showTranslation: true,
     surahName: 1,
     fromAyah: 1,
     toAyah: 3,
-    translation: 37,
+    localTranslation: 37,
+    englishTranslation: 203,
     translationFont: 1,
     videoQuality: 1,
     removeWatermark: false,
     uid: userData.uId,
     email: userData.email,
+    ayahEditor: [
+      {
+        audio: "https://verses.quran.com/Alafasy/mp3/001001.mp3",
+        arab: ["ﱁ ﱂ ﱃ ﱄ ﱅ"],
+        unchanged: { arab: [Array], local: [Array], eng: [Array] },
+        splitTimes: [],
+        splitCount: 0,
+        ayahKey: "1:1",
+        page: 1,
+        local: ["പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തില്‍ ."],
+        eng: ["In the name of Allah, the All-Merciful, the Bestower of mercy"],
+        ayahDuration: 5.590204,
+      },
+      {
+        audio: "https://verses.quran.com/Alafasy/mp3/001002.mp3",
+        arab: ["ﱆ ﱇ ﱈ ﱉ ﱊ"],
+        unchanged: { arab: [Array], local: [Array], eng: [Array] },
+        splitTimes: [],
+        splitCount: 0,
+        ayahKey: "1:2",
+        page: 1,
+        local: ["സ്തുതി സര്‍വ്വലോക പരിപാലകനായ അല്ലാഹുവിന്നാകുന്നു."],
+        eng: ["All praise be to Allah, Lord of all realms,"],
+        ayahDuration: 4.623673,
+      },
+      {
+        audio: "https://verses.quran.com/Alafasy/mp3/001003.mp3",
+        arab: ["ﱋ ﱌ ﱍ"],
+        unchanged: { arab: [Array], local: [Array], eng: [Array] },
+        splitTimes: [],
+        splitCount: 0,
+        ayahKey: "1:3",
+        page: 1,
+        local: ["പരമകാരുണികനും കരുണാനിധിയും."],
+        eng: ["the All-Merciful, the Bestower of mercy,"],
+      },
+    ],
   });
 
   const showFileChoose = useSelector((state) => state.ui.fileChooseIsVisible);
 
   const submissionButton = useSelector((state) => state.generate.submissionButton);
 
+  const editForm = useSelector((state) => state.generate.editForm);
   const editButton = useSelector((state) => state.generate.editButtonIsClicked);
 
   const showProgressModal = useSelector((state) => state.ui.progressModalIsVisible);
@@ -61,6 +102,8 @@ const GenerateForm = () => {
   const imagePage = useSelector((state) => state.generate.imagePage);
   const imageQuery = useSelector((state) => state.generate.imageQuery);
 
+  const generateForm = useSelector((state) => state.generate.generateForm);
+
   // Choose Video Modal Handling
   const showChooseFile = () => {
     dispatch(uiActions.showFileChoose());
@@ -72,6 +115,7 @@ const GenerateForm = () => {
   };
 
   const hideAyahEditor = () => {
+    dispatch(generateActions.editButtonIsClosed());
     dispatch(uiActions.hideAyahEditorModal());
   };
 
@@ -84,8 +128,24 @@ const GenerateForm = () => {
     setFormData({
       ...formData,
       [name]: value,
+      // ayahEditor: [],
     });
+
+    if (
+      name === "surahName" ||
+      name === "fromAyah" ||
+      name === "toAyah" ||
+      name === "recitor" ||
+      name === "localTranslation" ||
+      name === "englishTranslation"
+    ) {
+      dispatch(generateActions.updateToEditForm({ name, value }));
+    }
   };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   // const surahRefChangeHandler = (e) => {
   //   const index = e.target.selectedIndex;
@@ -105,24 +165,27 @@ const GenerateForm = () => {
     dispatch(generateActions.updateToGenerateForm(data));
   });
 
-  const editButtonHandler = useCallback((data) => {
-    dispatch(generateActions.updateToEditForm(data));
-  });
-
   useEffect(() => {
-    if (editButton) {
-      editButtonHandler(formData);
-      return;
-    }
     if (submissionButton) {
+      if (ayahEditor.length < 1) {
+        console.log("THIS FETCHING AYAH EDITOR NOW");
+
+        fetchAyah(dispatch, editForm, false).then(() => {
+          submissionButtonHandler(formData);
+        });
+        return;
+      }
+      console.log("USING ALREADY FGETCHED AYAH DATA");
+
       submissionButtonHandler(formData);
     }
-  }, [formData, submissionButton, editButton]);
+  }, [submissionButton]);
 
   // Choose Video Card Data Fetching
   useEffect(() => {
     dispatch(fetchRecitorData());
     dispatch(fetchQuranData());
+    dispatch(fetchTranslationList());
   }, []);
 
   useEffect(() => {
@@ -140,17 +203,15 @@ const GenerateForm = () => {
       dispatch(uiActions.showProgressModal());
     });
 
-    socket.on("onAyahEditorLoad", (data) => {
-      dispatch(uiActions.showLoading());
-      // dispatch(uiActions.showAyahEditorModal());
+    // socket.on("onAyahEditorLoad", (data) => {
+    //   dispatch(uiActions.showLoading());
+    //   // dispatch(uiActions.showAyahEditorModal());
 
-      console.log(data);
-    });
+    //   console.log(data);
+    // });
   }, []);
 
   // Fetch Ayah
-
-  useEffect(() => {}, [formData]);
 
   return (
     <React.Fragment>
@@ -162,7 +223,11 @@ const GenerateForm = () => {
       {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
       <div className="editor">
         <div className="col-1-of-4">
-          <FreeEditorForm formChooseFileHandler={showChooseFile} onChangeHandler={inputChangeHandler} />
+          <FreeEditorForm
+            formChooseFileHandler={showChooseFile}
+            onChangeHandler={inputChangeHandler}
+            formData={formData}
+          />
         </div>
         <div className="col-2-of-4"></div>
         <div className="col-1-of-4">

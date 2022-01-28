@@ -1,8 +1,21 @@
-import { Fragment } from "react";
+import { useEffect } from "react";
+import { Fragment, useState } from "react";
 // Assets
 import ProEditorIcon from "../assets/pro-editor.png";
 
 const ProEditorForm = (props) => {
+  const [locals, setLocals] = useState([]);
+
+  useEffect(() => {
+    fetch("https://api.quran.com/api/v4/resources/languages")
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setLocals(data.languages);
+      });
+  }, []);
+
   return (
     <Fragment>
       <img src={ProEditorIcon} alt="Pro editor icon" className="editor__icon" />
@@ -20,6 +33,7 @@ const ProEditorForm = (props) => {
             </option>
           </select>
         </div>
+
         <div className="form-group">
           <label htmlFor="translation-font" className="form-label">
             Translation Font

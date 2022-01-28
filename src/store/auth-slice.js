@@ -2,6 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 let userData = JSON.parse(localStorage.getItem("userData"));
 
+if (userData == null) {
+  userData = null;
+}
+
 const expiry = new Date(userData.expireOn);
 const timenow = new Date();
 

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 *,
 *::after,
 *::before {
@@ -14,6 +16,10 @@ html {
 body {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  font-family: "Inter", "sans-serif";
+  font-size: 1.8rem;
+  line-height: 1.7;
+  font-weight: 400;
 }
 
 select {
@@ -49,17 +55,22 @@ input[type="range"] {
 
 .markerdiv {
   width: 69%;
+  padding-bottom: 20px;
+  padding-top: 20px;
   margin-left: auto;
   margin-right: auto;
-  height: 10px;
+
   position: relative;
 }
 
 .marker {
-  width: 3px;
-  height: 20px;
+  /* width: 3px; */
+  /* height: 30px; */
   background-color: red;
-
+  color: white;
+  border-radius: 8px;
+  padding: 2px;
+  font-size: 1.3rem;
   position: absolute;
   left: 100%;
 }
@@ -146,13 +157,6 @@ input[type="checkbox"]:checked + .form-checkbox__label .form-checkbox__checkbox 
   height: 100vh;
   position: fixed;
   background-color: rgba(0, 0, 0, 0.5);
-}
-
-body {
-  font-family: "Inter", "sans-serif";
-  font-size: 1.8rem;
-  line-height: 1.7;
-  font-weight: 400;
 }
 
 .u-margin-top-small {
@@ -558,10 +562,6 @@ body {
   width: calc(2 * (100% / 4));
 }
 /*# sourceMappingURL=main.css.map */
-
-HTML CSSResult Skip Results Iframe * {
-  font-family: "Inter";
-}
 
 .progresspopup {
   border: 1px solid #0003;

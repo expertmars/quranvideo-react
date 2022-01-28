@@ -8,7 +8,7 @@ const generateSlice = createSlice({
     submissionButton: false,
 
     // Edit Button
-    editForm: [],
+    editForm: [{ recitor: 7, surahName: 1, fromAyah: 1, toAyah: 3, localTranslation: 37, englishTranslation: 203 }],
     editButtonIsClicked: false,
 
     // ChooseVideoCard
@@ -73,35 +73,44 @@ const generateSlice = createSlice({
 
       */
     ],
+    transList: [],
   },
   reducers: {
+    updateTransList(state, action) {
+      const loadedTrans = action.payload;
+      state.transList = loadedTrans;
+    },
+
     // GenerateForm
     updateToGenerateForm(state, action) {
       const loadedItems = action.payload;
-      state.generateForm = [loadedItems, state.selectedVideo, state.selectedPhoto];
+      const formItems = { ...loadedItems, ayahEditor: state.ayahEditor };
+      state.generateForm = [formItems, state.selectedVideo, state.selectedPhoto];
       state.submissionButton = false;
-
-      // return {
-      //   ...state,
-      //   generateForm: [loadedItems],
-      //   submissionButton: false,
-      // };
     },
 
     // Edit Button
 
     updateToEditForm(state, action) {
-      const loadedItems = action.payload;
-      state.editForm = [loadedItems, state.selectedVideo, state.selectedPhoto];
-      state.submissionButton = false;
+      const { name, value } = action.payload;
+      state.editForm[0][name] = value;
     },
 
-    updateEditButtonIsClicked(state, action) {
+    editButtonIsClicked(state, action) {
       state.editButtonIsClicked = true;
+    },
+
+    editButtonIsClosed(state, action) {
+      state.editButtonIsClicked = false;
     },
 
     updateSubmissionButton(state, action) {
       state.submissionButton = true;
+    },
+
+    emptyAyahEditorData(state, action) {
+      console.log("EMPTYING AYAH EDITO");
+      state.ayahEditor = [];
     },
 
     updateAyahEditor(state, action) {
@@ -188,6 +197,29 @@ const generateSlice = createSlice({
       };
     },
 
+    resetSplit(state, action) {
+      const ayahIndex = action.payload.index;
+
+      if (action.payload.mode === "arab") {
+        state.ayahEditor[ayahIndex] = {
+          ...state.ayahEditor[ayahIndex],
+          arab: action.payload.value,
+        };
+      } else if (action.payload.mode === "eng") {
+        state.ayahEditor[ayahIndex] = {
+          ...state.ayahEditor[ayahIndex],
+          eng: action.payload.value,
+        };
+      } else if (action.payload.mode === "local") {
+        state.ayahEditor[ayahIndex] = {
+          ...state.ayahEditor[ayahIndex],
+          local: action.payload.value,
+        };
+      } else {
+        throw "cannot find a matching task on resetSplit call";
+      }
+    },
+
     // Fetch Ayah - (generate-actions.js)
     updateAyahKeys(state, action) {
       const verseKey = action.payload.verseKey;
@@ -216,28 +248,6 @@ const generateSlice = createSlice({
       state.arab = [];
     },
 
-    updateTransLocal(state, action) {
-      const loadedTrans = action.payload;
-      state.localTrans = loadedTrans;
-      //Unchanged
-      state.unChangedLocal = loadedTrans;
-    },
-
-    updateTransEnglish(state, action) {
-      const loadedTrans = action.payload;
-      state.engTrans = loadedTrans;
-      //Unchanged
-      state.unChangedEnglish = loadedTrans;
-    },
-
-    updateEnglish(state, action) {
-      const loadedEng = action.payload;
-      return {
-        ...state,
-        engTrans: [...state.engTrans, [...loadedEng]],
-      };
-    },
-
     splitEng(state, action) {
       const ayahIndex = action.payload.index;
 
@@ -246,14 +256,6 @@ const generateSlice = createSlice({
       state.ayahEditor[ayahIndex] = {
         ...state.ayahEditor[ayahIndex],
         eng: tags,
-      };
-    },
-
-    updateLocal(state, action) {
-      const loadedLocal = action.payload;
-      return {
-        ...state,
-        localTrans: [...state.localTrans, [...loadedLocal]],
       };
     },
 
@@ -268,16 +270,6 @@ const generateSlice = createSlice({
       };
     },
 
-    updateArab(state, action) {
-      const loadedArab = action.payload;
-      return {
-        ...state,
-        arab: [...state.arab, [...loadedArab]],
-        //unchanged
-        unChangedArab: [...state.arab, [...loadedArab]],
-      };
-    },
-
     splitArab(state, action) {
       const ayahIndex = action.payload.index;
 
@@ -287,16 +279,6 @@ const generateSlice = createSlice({
         ...state.ayahEditor[ayahIndex],
         arab: tags,
       };
-    },
-
-    updateSplittingTime(state, action) {
-      const currentIndex = action.payload.index;
-      const time = action.payload.time;
-      if (state.splittingTimes[currentIndex] == null) {
-        state.splittingTimes[currentIndex] = [time];
-      } else {
-        state.splittingTimes[currentIndex] = [...state.splittingTimes[currentIndex], time];
-      }
     },
 
     // Photo - (ChooseVideoCard)

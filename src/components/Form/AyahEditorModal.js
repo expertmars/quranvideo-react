@@ -30,6 +30,11 @@ const AyahEditorModal = (props) => {
   const splitTimes = editingAyah.splitTimes;
 
   const [step, setStep] = useState(0);
+  const [lastTags, setLastTags] = useState({
+    arab: editingAyah.arab,
+    eng: editingAyah.eng,
+    local: editingAyah.local,
+  });
 
   // console.log(fromAyah, toAyah);
 
@@ -46,6 +51,7 @@ const AyahEditorModal = (props) => {
   };
 
   const optionsList = [];
+  const ayahlist = [];
 
   let index = 0;
   for (let i = fromAyah; i <= toAyah; i++) {
@@ -54,6 +60,7 @@ const AyahEditorModal = (props) => {
         {i}
       </option>
     );
+    ayahlist.push(i);
     index++;
   }
 
@@ -123,6 +130,11 @@ const AyahEditorModal = (props) => {
 
     if (step === 3) {
       dispatch(generateActions.updateAyahEditor({ task: "IncreaseSplitCount", index: currentAyahIndex }));
+      setLastTags({
+        arab: editingAyah.arab,
+        eng: editingAyah.eng,
+        local: editingAyah.local,
+      });
       return setStep(0);
     }
 
@@ -148,7 +160,11 @@ const AyahEditorModal = (props) => {
                 <label htmlFor="ayahNo" className="form-label">
                   Select the ayah to edit
                 </label>
-                <select className="form-list" name="ayahNo" onChange={ayahNoHandler}>
+                <select
+                  className="form-list"
+                  name="ayahNo"
+                  defaultValue={ayahlist[currentAyahIndex]}
+                  onChange={ayahNoHandler}>
                   {optionsList}
                 </select>
               </div>
@@ -170,7 +186,9 @@ const AyahEditorModal = (props) => {
                   {splitTimes && (
                     <div className="markerdiv">
                       {splitTimes.map((splittime) => (
-                        <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}></div>
+                        <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}>
+                          {splittime.toFixed(2)}s
+                        </div>
                       ))}
                     </div>
                   )}
@@ -231,10 +249,13 @@ const AyahEditorModal = (props) => {
                 <h3>Arabic</h3>
                 <Tag
                   defaultTags={editingAyah.arab}
+                  lastTags={lastTags}
                   page={pagenum}
                   arabic={true}
                   currentIndex={currentAyahIndex}
                   mode="arab"
+                  splits={splitTimes}
+                  splitCount={editingAyah.splitCount}
                 />
               </>
             )}
@@ -243,14 +264,30 @@ const AyahEditorModal = (props) => {
               <>
                 <h3>English</h3>
 
-                <Tag defaultTags={editingAyah.eng} arabic={false} currentIndex={currentAyahIndex} mode="english" />
+                <Tag
+                  defaultTags={editingAyah.eng}
+                  lastTags={lastTags}
+                  arabic={false}
+                  currentIndex={currentAyahIndex}
+                  mode="english"
+                  splits={splitTimes}
+                  splitCount={editingAyah.splitCount}
+                />
               </>
             )}
 
             {step === 3 && (
               <>
-                <h3>Local - Malayalam</h3>
-                <Tag defaultTags={editingAyah.local} currentIndex={currentAyahIndex} arabic={false} mode="local" />
+                <h3>Local Language</h3>
+                <Tag
+                  defaultTags={editingAyah.local}
+                  lastTags={lastTags}
+                  currentIndex={currentAyahIndex}
+                  arabic={false}
+                  mode="local"
+                  splits={splitTimes}
+                  splitCount={editingAyah.splitCount}
+                />
               </>
             )}
             {editingAyah.splitTimes[editingAyah.splitCount] && (
@@ -261,7 +298,7 @@ const AyahEditorModal = (props) => {
                   </button>
                 )}
                 <button className="btn" onClick={onNextStepHandler}>
-                  Next
+                  {step === 3 ? "Finish" : "Next"}
                 </button>
               </>
             )}
