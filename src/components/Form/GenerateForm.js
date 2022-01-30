@@ -5,7 +5,7 @@ import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
 import ProgressModal from "./ProgressModal";
-import { fetchAyah, fetchTranslationList } from "../../store/generate-actions";
+import { fetchAyah, fetchTranslationList, fetchGoogleFonts } from "../../store/generate-actions";
 import AyahEditorModal from "./AyahEditorModal";
 
 import {
@@ -27,7 +27,6 @@ const GenerateForm = () => {
 
   const [formData, setFormData] = useState({
     arabicFont: 1,
-    englishFont: 1,
     layout: 1,
     recitor: 7,
     resolution: "720x1080",
@@ -39,11 +38,15 @@ const GenerateForm = () => {
     toAyah: 3,
     localTranslation: 37,
     englishTranslation: 203,
-    translationFont: 1,
+    englishFont: "Poppins",
+    translationFont: "Baloo Chettan 2",
+    englishSize: 24,
+    translationSize: 22,
     videoQuality: 1,
     removeWatermark: false,
     uid: userData.uId,
     email: userData.email,
+    customLogo: false,
     ayahEditor: [
       {
         audio: "https://verses.quran.com/Alafasy/mp3/001001.mp3",
@@ -122,12 +125,13 @@ const GenerateForm = () => {
   // Form Handling
   const inputChangeHandler = (event) => {
     const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
+    let value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
 
     setFormData({
       ...formData,
       [name]: value,
+
       // ayahEditor: [],
     });
 
@@ -186,6 +190,7 @@ const GenerateForm = () => {
     dispatch(fetchRecitorData());
     dispatch(fetchQuranData());
     dispatch(fetchTranslationList());
+    dispatch(fetchGoogleFonts());
   }, []);
 
   useEffect(() => {

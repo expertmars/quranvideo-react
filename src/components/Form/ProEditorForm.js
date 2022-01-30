@@ -1,19 +1,31 @@
 import { useEffect } from "react";
 import { Fragment, useState } from "react";
+import { useSelector } from "react-redux";
+import { StepTitle } from "semantic-ui-react";
+
+import { BACKEND_URL } from "../../config";
+import { authActions } from "../../store/auth-slice";
+import Upload from "../UI/Upload";
+
+import axios from "axios";
+
 // Assets
 import ProEditorIcon from "../assets/pro-editor.png";
 
 const ProEditorForm = (props) => {
-  const [locals, setLocals] = useState([]);
+  const googleFonts = useSelector((state) => state.generate.googleFonts);
+  const uid = useSelector((state) => state.auth.userData.uId);
+
+  const [engSizes, setEngSizes] = useState([]);
+  const [localSizes, setLocalSizes] = useState([]);
 
   useEffect(() => {
-    fetch("https://api.quran.com/api/v4/resources/languages")
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setLocals(data.languages);
-      });
+    const list = [];
+    for (let i = 22; i <= 36; i++) {
+      list.push(i);
+    }
+    setEngSizes(list);
+    setLocalSizes(list);
   }, []);
 
   return (
@@ -39,33 +51,69 @@ const ProEditorForm = (props) => {
             Translation Font
           </label>
           <select className="form-list" name="translationFont" onChange={props.onChangeHandler}>
-            <option value={1} className="form-list-item">
-              Indulekha
-            </option>
-            <option value={2} className="form-list-item">
-              Leela
-            </option>
-            <option value={3} className="form-list-item">
-              Karthika (Sura)
-            </option>
+            {googleFonts.map((font) => {
+              const sel = font.family === "Baloo Chettan 2" ? "selected" : "";
+
+              return (
+                <option value={font.family} selected={sel} className="form-list-item">
+                  {font.family}
+                </option>
+              );
+            })}
           </select>
         </div>
+
+        <div className="form-group">
+          <label htmlFor="translationSize" className="form-label">
+            Translation Size
+          </label>
+          <select className="form-list" name="translationSize" onChange={props.onChangeHandler}>
+            {localSizes.map((size) => {
+              const sel = size === 28 ? "selected" : "";
+
+              return (
+                <option value={size} selected={sel} className="form-list-item">
+                  {size}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
         <div className="form-group">
           <label htmlFor="english-font" className="form-label">
             English Font
           </label>
           <select className="form-list" name="englishFont" onChange={props.onChangeHandler}>
-            <option value={1} className="form-list-item">
-              Roboto
-            </option>
-            <option value={2} className="form-list-item">
-              Poppins
-            </option>
-            <option value={3} className="form-list-item">
-              Montserrat
-            </option>
+            {googleFonts.map((font) => {
+              const sel = font.family === "Poppins" ? "selected" : "";
+
+              return (
+                <option value={font.family} selected={sel} className="form-list-item">
+                  {font.family}
+                </option>
+              );
+            })}
           </select>
         </div>
+
+        <div className="form-group">
+          <label htmlFor="englishSize" className="form-label">
+            English Size
+          </label>
+          <select className="form-list" name="englishSize" onChange={props.onChangeHandler}>
+            {engSizes.map((size) => {
+              const sel = size === 24 ? "selected" : "";
+
+              return (
+                <option value={size} selected={sel} className="form-list-item">
+                  {size}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
         <div className="form-group">
           <input
             type="checkbox"
@@ -78,21 +126,7 @@ const ProEditorForm = (props) => {
             <span className="form-checkbox__checkbox">&nbsp;</span>Remove Watermark
           </label>
         </div>
-        <div className="form-group">
-          <label htmlFor="chooseOwnWatermark" className="form-choose">
-            Watermark{" "}
-          </label>
-          <input
-            type="file"
-            id="chooseOwnWatermark"
-            name="chooseOwnWatermark"
-            className="form-input-file"
-            onChange={props.onChangeHandler}
-          />
-          {/* <a href="#file-choose" id="uploadFile" class="form-choose"
-                >Choose a file</a
-              > */}
-        </div>
+        <Upload uid={uid} />
         <div className="form-group">
           <label htmlFor="watermark-layout" className="form-label">
             Layout

@@ -27,6 +27,10 @@ const generateSlice = createSlice({
     quranSurah: [],
     generatedRecitors: [],
 
+    //Logo / watermark
+
+    customLogo: false,
+
     // Fetch Ayah - (generate-actions.js)
     ayahKeys: {}, // ayahKey: glyph
     listOfAyah: {}, // glyph : page
@@ -74,17 +78,29 @@ const generateSlice = createSlice({
       */
     ],
     transList: [],
+    googleFonts: [],
   },
   reducers: {
+    updateCustomLogo(state, action) {
+      const status = action.payload.status;
+      state.customLogo = status;
+      // console.log(status);
+    },
+
     updateTransList(state, action) {
       const loadedTrans = action.payload;
       state.transList = loadedTrans;
     },
 
+    updateGoogleFonts(state, action) {
+      const loadedFonts = action.payload;
+      state.googleFonts = loadedFonts;
+    },
+
     // GenerateForm
     updateToGenerateForm(state, action) {
       const loadedItems = action.payload;
-      const formItems = { ...loadedItems, ayahEditor: state.ayahEditor };
+      const formItems = { ...loadedItems, ayahEditor: state.ayahEditor, customLogo: state.customLogo };
       state.generateForm = [formItems, state.selectedVideo, state.selectedPhoto];
       state.submissionButton = false;
     },

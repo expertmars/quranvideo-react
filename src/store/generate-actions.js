@@ -60,6 +60,19 @@ export const fetchTranslationList = () => {
   };
 };
 
+export const fetchGoogleFonts = () => {
+  return async (dispatch) => {
+    fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA_MVkjzkLXjbGN0YFf3aMJ3HlMmoT1TDM")
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        // console.log(data.items);
+        dispatch(generateActions.updateGoogleFonts(data.items));
+      });
+  };
+};
+
 export const fetchVideoData = (videoPage, videoQuery) => {
   return async (dispatch) => {
     const fetchVideo = async () => {
