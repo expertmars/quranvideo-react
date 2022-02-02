@@ -5,6 +5,7 @@ import FreeEditorForm from "./FreeEditorForm";
 import ProEditorForm from "./ProEditorForm";
 import ChooseVideoCard from "../Form/ChooseVideoCard";
 import ProgressModal from "./ProgressModal";
+import CustomAudioModal from "./CustomAudioModal";
 import { fetchAyah, fetchTranslationList, fetchGoogleFonts } from "../../store/generate-actions";
 import AyahEditorModal from "./AyahEditorModal";
 
@@ -23,6 +24,7 @@ import Loading from "../UI/Loading";
 const GenerateForm = () => {
   const userData = useSelector((state) => state.auth.userData);
   const ayahEditor = useSelector((state) => state.generate.ayahEditor);
+  const showCustomAudioModal = useSelector((state) => state.generate.showCustomAudioModal);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -48,41 +50,41 @@ const GenerateForm = () => {
     email: userData.email,
     customLogo: false,
     ayahEditor: [
-      {
-        audio: "https://verses.quran.com/Alafasy/mp3/001001.mp3",
-        arab: ["ﱁ ﱂ ﱃ ﱄ ﱅ"],
-        unchanged: { arab: [Array], local: [Array], eng: [Array] },
-        splitTimes: [],
-        splitCount: 0,
-        ayahKey: "1:1",
-        page: 1,
-        local: ["പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തില്‍ ."],
-        eng: ["In the name of Allah, the All-Merciful, the Bestower of mercy"],
-        ayahDuration: 5.590204,
-      },
-      {
-        audio: "https://verses.quran.com/Alafasy/mp3/001002.mp3",
-        arab: ["ﱆ ﱇ ﱈ ﱉ ﱊ"],
-        unchanged: { arab: [Array], local: [Array], eng: [Array] },
-        splitTimes: [],
-        splitCount: 0,
-        ayahKey: "1:2",
-        page: 1,
-        local: ["സ്തുതി സര്‍വ്വലോക പരിപാലകനായ അല്ലാഹുവിന്നാകുന്നു."],
-        eng: ["All praise be to Allah, Lord of all realms,"],
-        ayahDuration: 4.623673,
-      },
-      {
-        audio: "https://verses.quran.com/Alafasy/mp3/001003.mp3",
-        arab: ["ﱋ ﱌ ﱍ"],
-        unchanged: { arab: [Array], local: [Array], eng: [Array] },
-        splitTimes: [],
-        splitCount: 0,
-        ayahKey: "1:3",
-        page: 1,
-        local: ["പരമകാരുണികനും കരുണാനിധിയും."],
-        eng: ["the All-Merciful, the Bestower of mercy,"],
-      },
+      // {
+      //   audio: "https://verses.quran.com/Alafasy/mp3/001001.mp3",
+      //   arab: ["ﱁ ﱂ ﱃ ﱄ ﱅ"],
+      //   unchanged: { arab: [Array], local: [Array], eng: [Array] },
+      //   splitTimes: [],
+      //   splitCount: 0,
+      //   ayahKey: "1:1",
+      //   page: 1,
+      //   local: ["പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തില്‍ ."],
+      //   eng: ["In the name of Allah, the All-Merciful, the Bestower of mercy"],
+      //   ayahDuration: 5.590204,
+      // },
+      // {
+      //   audio: "https://verses.quran.com/Alafasy/mp3/001002.mp3",
+      //   arab: ["ﱆ ﱇ ﱈ ﱉ ﱊ"],
+      //   unchanged: { arab: [Array], local: [Array], eng: [Array] },
+      //   splitTimes: [],
+      //   splitCount: 0,
+      //   ayahKey: "1:2",
+      //   page: 1,
+      //   local: ["സ്തുതി സര്‍വ്വലോക പരിപാലകനായ അല്ലാഹുവിന്നാകുന്നു."],
+      //   eng: ["All praise be to Allah, Lord of all realms,"],
+      //   ayahDuration: 4.623673,
+      // },
+      // {
+      //   audio: "https://verses.quran.com/Alafasy/mp3/001003.mp3",
+      //   arab: ["ﱋ ﱌ ﱍ"],
+      //   unchanged: { arab: [Array], local: [Array], eng: [Array] },
+      //   splitTimes: [],
+      //   splitCount: 0,
+      //   ayahKey: "1:3",
+      //   page: 1,
+      //   local: ["പരമകാരുണികനും കരുണാനിധിയും."],
+      //   eng: ["the All-Merciful, the Bestower of mercy,"],
+      // },
     ],
   });
 
@@ -122,6 +124,10 @@ const GenerateForm = () => {
     dispatch(uiActions.hideAyahEditorModal());
   };
 
+  const hideCustomAudio = () => {
+    dispatch(generateActions.customAudioModal({ status: false }));
+  };
+
   // Form Handling
   const inputChangeHandler = (event) => {
     const target = event.target;
@@ -144,6 +150,7 @@ const GenerateForm = () => {
       name === "englishTranslation"
     ) {
       dispatch(generateActions.updateToEditForm({ name, value }));
+      dispatch(generateActions.resetCustomAudio());
     }
   };
 
@@ -226,6 +233,9 @@ const GenerateForm = () => {
       )}
       {showProgressModal && <ProgressModal />}
       {showFileChoose && <ChooseVideoCard onClose={hideChooseFile} />}
+      {showCustomAudioModal && !showLoading && (
+        <CustomAudioModal onClose={hideCustomAudio} ayahs={[formData.toAyah, formData.fromAyah]} />
+      )}
       <div className="editor">
         <div className="col-1-of-4">
           <FreeEditorForm

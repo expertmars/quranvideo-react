@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { BACKEND_URL } from "../config";
 
 const generateSlice = createSlice({
   name: "generate",
@@ -30,6 +31,10 @@ const generateSlice = createSlice({
     //Logo / watermark
 
     customLogo: false,
+    customAudio: false,
+
+    // Custom Audio Modal
+    showCustomAudioModal: false,
 
     // Fetch Ayah - (generate-actions.js)
     ayahKeys: {}, // ayahKey: glyph
@@ -81,6 +86,11 @@ const generateSlice = createSlice({
     googleFonts: [],
   },
   reducers: {
+    customAudioModal(state, action) {
+      const status = action.payload.status;
+      state.showCustomAudioModal = status;
+    },
+
     updateCustomLogo(state, action) {
       const status = action.payload.status;
       state.customLogo = status;
@@ -100,7 +110,12 @@ const generateSlice = createSlice({
     // GenerateForm
     updateToGenerateForm(state, action) {
       const loadedItems = action.payload;
-      const formItems = { ...loadedItems, ayahEditor: state.ayahEditor, customLogo: state.customLogo };
+      const formItems = {
+        ...loadedItems,
+        ayahEditor: state.ayahEditor,
+        customLogo: state.customLogo,
+        customAudio: state.customAudio,
+      };
       state.generateForm = [formItems, state.selectedVideo, state.selectedPhoto];
       state.submissionButton = false;
     },
@@ -198,6 +213,22 @@ const generateSlice = createSlice({
       } catch (err) {
         console.log(err);
       }
+    },
+
+    updateCustomAyahAudio(state, action) {
+      const uid = action.payload.uid;
+
+      state.ayahEditor.map((ayahData, index) => {
+        state.ayahEditor[index] = {
+          ...state.ayahEditor[index],
+          audio: BACKEND_URL + `/assets/${uid}/${index + 1}.mp3`,
+        };
+      });
+      state.customAudio = true;
+    },
+
+    resetCustomAudio(state, action) {
+      state.customAudio = false;
     },
 
     resetAllSplit(state, action) {

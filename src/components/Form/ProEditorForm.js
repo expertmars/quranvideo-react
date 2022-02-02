@@ -1,23 +1,38 @@
 import { useEffect } from "react";
 import { Fragment, useState } from "react";
 import { useSelector } from "react-redux";
-import { StepTitle } from "semantic-ui-react";
-
-import { BACKEND_URL } from "../../config";
-import { authActions } from "../../store/auth-slice";
 import Upload from "../UI/Upload";
+import { useDispatch } from "react-redux";
+import { generateActions } from "../../store/generate-slice";
+import { uiActions } from "../../store/ui-slice";
 
-import axios from "axios";
+import { fetchAyah } from "../../store/generate-actions";
 
 // Assets
 import ProEditorIcon from "../assets/pro-editor.png";
 
 const ProEditorForm = (props) => {
+  const dispatch = useDispatch();
+
   const googleFonts = useSelector((state) => state.generate.googleFonts);
+  const ayahEditor = useSelector((state) => state.generate.ayahEditor);
   const uid = useSelector((state) => state.auth.userData.uId);
+  const editForm = useSelector((state) => state.generate.editForm);
 
   const [engSizes, setEngSizes] = useState([]);
   const [localSizes, setLocalSizes] = useState([]);
+
+  const showCustomAudioHandler = () => {
+    if (!ayahEditor.length > 0) {
+      fetchAyah(dispatch, editForm, false).then(() => {
+        dispatch(uiActions.hideLoading());
+        dispatch(generateActions.customAudioModal({ status: true }));
+      });
+      dispatch(uiActions.showLoading());
+    } else {
+      dispatch(generateActions.customAudioModal({ status: true }));
+    }
+  };
 
   useEffect(() => {
     const list = [];
@@ -127,6 +142,16 @@ const ProEditorForm = (props) => {
           </label>
         </div>
         <Upload uid={uid} />
+
+        <div className="form-group">
+          <label htmlFor="#" className="form-label">
+            Custom Audio
+          </label>
+          <a onClick={showCustomAudioHandler} className="form-choose">
+            Upload .mp3 File
+          </a>
+        </div>
+
         <div className="form-group">
           <label htmlFor="watermark-layout" className="form-label">
             Layout

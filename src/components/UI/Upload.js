@@ -28,6 +28,7 @@ const Upload = (props) => {
 
     formData.append("uid", props.uid);
     formData.append("watermark", file);
+
     axios.post(BACKEND_URL + "/watermark", formData).then(
       (res) => {
         if (res.status === 200) {
@@ -37,8 +38,8 @@ const Upload = (props) => {
           dispatch(generateActions.updateCustomLogo({ status: true }));
         }
       },
-      (res) => {
-        setErr(res.response.statusText);
+      (err) => {
+        setErr(err.response.statusText);
       } //setErr(err)
     );
   };

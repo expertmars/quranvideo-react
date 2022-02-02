@@ -4,7 +4,7 @@ import generateSlice, { generateActions } from "../../store/generate-slice";
 import { uiActions } from "../../store/ui-slice";
 
 // import { useSelector, useDispatch } from "react-redux";
-import { fetchAyahData, startGenerateVideoData } from "../../store/generate-actions";
+import { fetchAyah, startGenerateVideoData } from "../../store/generate-actions";
 
 // Assets
 import freeEditorIcon from "../assets/free-editor.png";
@@ -41,6 +41,10 @@ const Form = (props) => {
   const showEditorHandler = () => {
     dispatch(generateActions.editButtonIsClicked());
     if (!ayahEditor.length > 0) {
+      fetchAyah(dispatch, editForm, false).then(() => {
+        dispatch(uiActions.hideLoading());
+        dispatch(uiActions.showAyahEditorModal());
+      });
       dispatch(uiActions.showLoading());
     } else {
       dispatch(uiActions.showAyahEditorModal());

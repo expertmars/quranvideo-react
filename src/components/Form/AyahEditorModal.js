@@ -149,7 +149,7 @@ const AyahEditorModal = (props) => {
 
   return (
     <React.Fragment>
-      {<Loading />}
+      {/* {<Loading />} */}
 
       <Modal modalClass={"progresspopup ayahEditorPopup"} onClose={props.onClose}>
         <div className="progressBox">

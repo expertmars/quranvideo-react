@@ -594,7 +594,8 @@ input[type="checkbox"]:checked + .form-checkbox__label .form-checkbox__checkbox 
 }
 
 .ayahEditorPopup {
-  /* height: 70vh; */
+  text-align: center;
+  padding: 4rem 2rem;
 }
 
 .react-player {

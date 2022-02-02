@@ -13,6 +13,7 @@ const Generate = () => {
   const submissionButton = useSelector((state) => state.generate.submissionButton);
 
   const editButton = useSelector((state) => state.generate.editButtonIsClicked);
+  const customAudio = useSelector((state) => state.generate.showCustomAudioModal);
 
   const isLogged = useSelector((state) => state.auth.isLogged);
 
@@ -62,7 +63,7 @@ const Generate = () => {
       console.log("THIS IS");
       setOldEditForm(editForm);
     }
-  }, [editForm, editButton]);
+  }, [editForm]);
 
   if (!isLogged) {
     return <Navigate to="/sign-in" />;
