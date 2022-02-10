@@ -13,8 +13,8 @@ const generateSlice = createSlice({
     editButtonIsClicked: false,
 
     // ChooseVideoCard
-    selectedPhoto: [],
-    selectedVideo: [],
+    isAyahwise: true,
+    selectedMedia: [],
     generatedImages: [],
     generatedVideos: [],
     totalDuration: 0,
@@ -116,7 +116,7 @@ const generateSlice = createSlice({
         customLogo: state.customLogo,
         customAudio: state.customAudio,
       };
-      state.generateForm = [formItems, state.selectedVideo, state.selectedPhoto];
+      state.generateForm = [formItems, state.selectedMedia];
       state.submissionButton = false;
     },
 
@@ -329,6 +329,11 @@ const generateSlice = createSlice({
     },
 
     // Photo - (ChooseVideoCard)
+    updateAudiowise(state, action) {
+      const status = action.payload.status;
+      state.isAyahwise = status;
+    },
+
     updateGeneratedImages(state, action) {
       const loadedImages = action.payload;
       return {
@@ -339,10 +344,14 @@ const generateSlice = createSlice({
 
     addPhotoToList(state, action) {
       const targetPhoto = action.payload;
-      state.selectedPhoto = state.selectedPhoto.concat(targetPhoto);
+      const preparedData = { ...targetPhoto, type: "photo" };
+      state.selectedMedia = state.selectedMedia.concat(preparedData);
     },
 
-    removePhotoFromList(state, action) {},
+    removePhotoFromList(state, action) {
+      console.log("remvoing");
+    },
+
     updateImagePage(state, action) {
       state.imagePage++;
     },
@@ -362,12 +371,16 @@ const generateSlice = createSlice({
     },
     addVideoToList(state, action) {
       const targetVideo = action.payload;
+      console.log(targetVideo);
       state.totalDuration = state.totalDuration + targetVideo.duration;
-      state.selectedVideo = state.selectedVideo.concat(targetVideo);
+      const preparedData = { ...targetVideo, type: "video" };
+      state.selectedMedia = state.selectedMedia.concat(preparedData);
     },
+
     removeVideoFromList(state, action) {
-      const itemId = action.payload;
-      state.selectedVideo = state.selectedVideo.filter((stateItem) => stateItem.id !== itemId.id);
+      const targetVideo = action.payload;
+      state.selectedMedia = state.selectedMedia.filter((stateItem) => stateItem.id !== targetVideo.id);
+      state.totalDuration = state.totalDuration - targetVideo.duration;
     },
     updateVideoPage(state, action) {
       state.videoPage++;

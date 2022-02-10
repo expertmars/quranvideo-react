@@ -1,22 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 
-let userData = JSON.parse(localStorage.getItem("userData"));
-
-if (userData == null) {
-  userData = null;
-}
-
-const expiry = new Date(userData.expireOn);
-const timenow = new Date();
-
-if (timenow > expiry) {
-  // userData = null;
-}
+const usrData = JSON.parse(localStorage.getItem("userData"));
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: { userData: userData, isLogged: userData },
+  initialState: { userData: usrData, isLogged: usrData },
   reducers: {
+    // getUserData(state, action) {
+    //   let data = JSON.parse(localStorage.getItem("userData"));
+    //   console.log(data);
+    //   if (data != null) {
+    //     state.userData = data;
+    //     state.isLogged = true;
+    //   } else {
+    //     state.isLogged = false;
+    //     state.userData = {};
+    //   }
+    // },
+
     updateUserData(state, action) {
       const loadedData = action.payload;
       localStorage.setItem("userData", JSON.stringify(loadedData));

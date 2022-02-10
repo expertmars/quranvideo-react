@@ -1,25 +1,36 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Modal from "../UI/Modal";
 import { generateActions } from "../../store/generate-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "../../store/ui-slice";
+import { BACKEND_URL } from "../../config";
 import InfiniteScroll from "react-infinite-scroll-component";
+import axios from "axios";
+import { useEffect } from "react";
 
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
 
   const fileInputRef = useRef();
 
+  const [audioDuration, setAudioDuration] = useState(0);
+
+  const uid = useSelector((state) => state.auth.userData.uId);
+
+  const isAyahwise = useSelector((state) => state.generate.isAyahwise);
+
   const generatedImages = useSelector((state) => state.generate.generatedImages);
   const generatedVideos = useSelector((state) => state.generate.generatedVideos);
 
-  const selectedPhotos = useSelector((state) => state.generate.selectedPhoto);
-  const selectedVideos = useSelector((state) => state.generate.selectedVideo);
+  const selectedMedia = useSelector((state) => state.generate.selectedMedia);
 
   const showChooseVideo = useSelector((state) => state.ui.chooseVideoIsVisible);
   const showChoosePhoto = useSelector((state) => state.ui.choosePhotoIsVisible);
 
   const totalDuration = useSelector((state) => state.generate.totalDuration);
+  const ayahEditor = useSelector((state) => state.generate.ayahEditor);
+
+  console.log(selectedMedia);
 
   // onImage, onVideo Click Handlers
   const imageClickHandler = (imageArray) => {
@@ -29,6 +40,16 @@ const ChooseVideoCard = (props) => {
   const videoClickHandler = (videoArray) => {
     dispatch(generateActions.addVideoToList(videoArray));
   };
+
+  function getDuration(src) {
+    return new Promise(function (resolve) {
+      var audio = new Audio();
+      audio.addEventListener("loadedmetadata", function () {
+        resolve(audio.duration);
+      });
+      audio.src = src;
+    });
+  }
 
   // Top Tab Click Handlers
   const choosePhotoClickHandler = (e) => {
@@ -83,6 +104,7 @@ const ChooseVideoCard = (props) => {
 
   // Duration for video
   const timeConvert = (duration) => {
+    duration = parseInt(duration);
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
     if (seconds < 10) {
@@ -125,14 +147,53 @@ const ChooseVideoCard = (props) => {
     return string.substring(0, cut);
   };
 
-  const videoName = (videoArray) =>
-    cutString(videoArray.thumbnail.split(`/${videoArray.id}/`)[1].split(`-${videoArray.id}.`)[0], 10);
-  const imageName = (imageArray) => cutString(imageArray.name.split(`/photo/`)[1].toString(), 10);
+  const videoMediaName = (mediaArray) => {
+    return cutString(mediaArray.thumbnail.split(`/${mediaArray.id}/`)[1].split(`-${mediaArray.id}.`)[0], 10) || "image";
+  };
+
+  const photoMediaName = (mediaArray) => {
+    return cutString(mediaArray.name.split(`/photo/`)[1].toString(), 10);
+  };
 
   // File Choose
   const chooseFileChangeHandler = (e) => {
-    console.log(e.target.files[0]);
+    let proceed = window.confirm("Do you want to upload this to the server?");
+    if (proceed) {
+      let files = e.target.files;
+
+      let formData = new FormData();
+      formData.append("uid", uid);
+      for (let i = 0; i < files.length; i++) {
+        formData.append("video", files[i]);
+      }
+
+      axios.post(BACKEND_URL + "/upload-video", formData).then((res) => {
+        if (res.status === 200) {
+          res.data.map((data, index) => {
+            let upfile = {
+              id: index,
+              duration: data.duration,
+              thumbnail: "https://dummyimage.com/16:9x1080&text=Video",
+              videoURL: BACKEND_URL + "/" + data.destination + "/" + data.filename,
+            };
+            dispatch(generateActions.addVideoToList(upfile));
+          });
+        }
+      });
+    }
   };
+
+  // Ayahwise Active Class Styling
+
+  const ayahwiseActiveClass = isAyahwise;
+
+  useEffect(() => {
+    ayahEditor.map((data) => {
+      getDuration(data.audio).then(function (length) {
+        setAudioDuration((prevState) => prevState + length);
+      });
+    });
+  }, []);
 
   return (
     <Modal onClose={props.onClose} modalClass={"videopopup"}>
@@ -153,6 +214,7 @@ const ChooseVideoCard = (props) => {
           type="file"
           id="file"
           style={{ display: "none" }}
+          multiple="multiple"
           onChange={chooseFileChangeHandler}
           ref={fileInputRef}
         />
@@ -164,14 +226,17 @@ const ChooseVideoCard = (props) => {
         </a>
       </div>
       <div className="videopopup__row">
-        <p href="#" className="videopopup__tab videopopup__tab--active">
+        <p
+          href="#"
+          className={`${"videopopup__tab"} ${isAyahwise && "videopopup__tab--active"}`}
+          onClick={(e) => dispatch(generateActions.updateAudiowise({ status: true }))}>
           Ayahwise
         </p>
-        <p href="#" className="videopopup__tab">
+        <p
+          href="#"
+          className={`${"videopopup__tab"} ${!isAyahwise && "videopopup__tab--active"}`}
+          onClick={(e) => dispatch(generateActions.updateAudiowise({ status: false }))}>
           Lengthwise
-        </p>
-        <p href="#" className="videopopup__tab">
-          Audiowise
         </p>
       </div>
       <div className="videopopup__row">
@@ -210,6 +275,7 @@ const ChooseVideoCard = (props) => {
                           loop>
                           <source src={videoArray.videoURL} type="video/mp4" />
                         </video>
+                        <p>{timeConvert(videoArray.duration)}</p>
                       </div>
                     </>
                   ))}
@@ -227,6 +293,7 @@ const ChooseVideoCard = (props) => {
                           loop>
                           <source src={videoArray.videoURL} type="video/mp4" />
                         </video>
+                        <p>{timeConvert(videoArray.duration)}</p>
                       </div>
                     </>
                   ))}
@@ -244,6 +311,7 @@ const ChooseVideoCard = (props) => {
                           loop>
                           <source src={videoArray.videoURL} type="video/mp4" />
                         </video>
+                        <p>{timeConvert(videoArray.duration)}</p>
                       </div>
                     </>
                   ))}
@@ -303,35 +371,45 @@ const ChooseVideoCard = (props) => {
       </div>
       <div className="videopopup__row">
         <div class="selectedvideo">
-          {selectedPhotos.map((imageArray) => (
-            <div className="selectedvideo__box">
-              <img src={imageArray.image} key={imageArray.id} alt={imageArray.id} className="selectedvideo__thumb" />
-              <div className="selectedvideo__left">
-                <h3 className="selectedvideo__name">{imageName(imageArray)}</h3>
-                <p className="selectedvideo__len">00:00</p>
-              </div>
-              <img src="https://i.imgur.com/v7wuPPh.png" alt="selectedvideo__images" className="selectedvideo__del" />
-            </div>
-          ))}
-          {selectedVideos.map((videoArray) => (
-            <div className="selectedvideo__box">
-              <img src={videoArray.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
-              <div className="selectedvideo__left">
-                <h3 className="selectedvideo__name">{videoName(videoArray)}</h3>
-                <p className="selectedvideo__len">{timeConvert(videoArray.duration)}</p>
-              </div>
-              <img
-                src="https://i.imgur.com/v7wuPPh.png"
-                alt="selectedvideo__videos"
-                className="selectedvideo__del"
-                onClick={() => dispatch(generateActions.removeVideoFromList(videoArray))}
-              />
-            </div>
-          ))}
+          {selectedMedia.map((eachMedia, index) => {
+            if (eachMedia.image)
+              return (
+                <div className="selectedvideo__box">
+                  <img src={eachMedia.image} key={eachMedia.id} alt={eachMedia.id} className="selectedvideo__thumb" />
+                  <div className="selectedvideo__left">
+                    <h3 className="selectedvideo__name">{photoMediaName(eachMedia)}</h3>
+                    <p className="selectedvideo__len">00:00</p>
+                  </div>
+                  <img
+                    src="https://i.imgur.com/v7wuPPh.png"
+                    alt="selectedvideo__images"
+                    className="selectedvideo__del"
+                    onClick={() => dispatch(generateActions.removeVideoFromList(eachMedia))}
+                  />
+                </div>
+              );
+
+            if (eachMedia.thumbnail)
+              return (
+                <div className="selectedvideo__box">
+                  <img src={eachMedia.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
+                  <div className="selectedvideo__left">
+                    <h3 className="selectedvideo__name">{index + 1}</h3>
+                    <p className="selectedvideo__len">{timeConvert(eachMedia.duration)}</p>
+                  </div>
+                  <img
+                    src="https://i.imgur.com/v7wuPPh.png"
+                    alt="selectedvideo__videos"
+                    className="selectedvideo__del"
+                    onClick={() => dispatch(generateActions.removeVideoFromList(eachMedia))}
+                  />
+                </div>
+              );
+          })}
         </div>
         <div className="videopopup__timeinfo">
           <span className="videopopup__current-time">{timeConvert(totalDuration)}</span>
-          <span className="videopopup__remaining-time"> / 00:00</span>
+          <span className="videopopup__remaining-time"> / {timeConvert(audioDuration)}</span>
         </div>
       </div>
       <div className="videopopup__row">

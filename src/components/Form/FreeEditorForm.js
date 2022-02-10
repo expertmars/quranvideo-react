@@ -176,7 +176,7 @@ const Form = (props) => {
               <option value={"1080x720"} className="form-list-item">
                 Landscape
               </option>
-              <option value={3} className="form-list-item">
+              <option value={"500x600"} className="form-list-item">
                 Instagram Story
               </option>
               <option value={4} className="form-list-item">

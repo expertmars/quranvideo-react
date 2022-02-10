@@ -111,6 +111,19 @@ const GenerateForm = () => {
 
   // Choose Video Modal Handling
   const showChooseFile = () => {
+    if (ayahEditor.length < 1) {
+      dispatch(uiActions.showLoading());
+
+      console.log("THIS FETCHING AYAH EDITOR NOW");
+
+      fetchAyah(dispatch, editForm, false).then(() => {
+        dispatch(uiActions.showFileChoose());
+        dispatch(uiActions.hideLoading());
+      });
+      return;
+    }
+    console.log("USING ALREADY FGETCHED AYAH DATA");
+
     dispatch(uiActions.showFileChoose());
   };
 

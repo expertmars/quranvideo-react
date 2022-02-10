@@ -15,7 +15,7 @@ const Generate = () => {
   const editButton = useSelector((state) => state.generate.editButtonIsClicked);
   const customAudio = useSelector((state) => state.generate.showCustomAudioModal);
 
-  const isLogged = useSelector((state) => state.auth.isLogged);
+  const isLoggedIn = useSelector((state) => state.auth.isLogged);
 
   const ayahEditor = useSelector((state) => state.generate.ayahEditor);
 
@@ -65,7 +65,7 @@ const Generate = () => {
     }
   }, [editForm]);
 
-  if (!isLogged) {
+  if (!isLoggedIn) {
     return <Navigate to="/sign-in" />;
   }
 
