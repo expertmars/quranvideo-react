@@ -1,0 +1,83 @@
+@import "../../sass/main.scss";
+
+.generate-header {
+  background-color: #222222;
+  height: 5rem;
+  padding: 0 2.4rem;
+  @include respond(tab-port) {
+    position: fixed;
+    width: 100%;
+  }
+}
+
+.generate-header__logo-box {
+  display: inline-block;
+  margin: 1.5rem 0;
+}
+
+.generate-header__logo {
+  width: 17.6rem;
+}
+
+.generate-header__user {
+  display: inline-block;
+  margin: 0.6rem 2.4rem;
+}
+
+.generate-header__left {
+  float: right;
+}
+
+.generate-header__user-avatar {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background-color: #ff7373;
+  color: #fff;
+  display: inline-block;
+  margin-right: 1rem;
+  font-size: 1.6rem;
+  text-align: center;
+  padding-top: 0.5rem;
+
+  background-position: center;
+  background-size: cover;
+}
+
+.generate-header__user-text {
+  display: inline-block;
+  color: #fff;
+  font-weight: 400;
+  font-size: 1.4rem;
+  @include respond(phone) {
+    display: none;
+  }
+}
+
+.generate-header__btn {
+  background-color: #44af69;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 1.4rem;
+  padding: 0.5rem 2rem;
+  text-decoration: none;
+  color: #fff;
+
+  &:disabled,
+  &:disabled:active,
+  &:disabled:hover {
+    color: #222;
+    background-color: rgb(233, 233, 233);
+    border: #222;
+    cursor: not-allowed;
+  }
+}
+
+.btn:disabled,
+.btn:disabled:active,
+.btn:disabled:hover {
+  color: #222;
+  background-color: rgb(233, 233, 233);
+  border: #222;
+  cursor: not-allowed;
+}

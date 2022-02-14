@@ -6,6 +6,7 @@ import classes from "./Upload.module.css";
 
 import { generateActions } from "../../store/generate-slice";
 import { useDispatch } from "react-redux";
+import Button from "./Button";
 
 const Upload = (props) => {
   const dispatch = useDispatch();
@@ -68,7 +69,7 @@ const Upload = (props) => {
 
   return (
     <form>
-      <div className="form-group">
+      <div className={classes["form-group"]}>
         {err.length > 0 && (
           <div class={classes.err} onClick={() => setErr([])}>
             {err}
@@ -76,7 +77,7 @@ const Upload = (props) => {
         )}
         {ok && <div class={classes.success}>Success</div>}
 
-        <label htmlFor="chooseOwnWatermark" className="form-choose">
+        <label htmlFor="chooseOwnWatermark" className={classes["form-choose"]}>
           {(url && (
             <div>
               <img height="50" src={url} />
@@ -89,15 +90,13 @@ const Upload = (props) => {
           type="file"
           id="chooseOwnWatermark"
           name="watermark"
-          className="form-input-file"
+          className={classes["form-input-file"]}
           onChange={onWaterChange}
         />
         {/* <a href="#file-choose" id="uploadFile" class="form-choose"
         >Choose a file</a
       > */}
-        <button onClick={ok != true ? watermarkHandler : removeImageHandler} className="btn">
-          {ok != true ? "Uplaod" : "Reset"}
-        </button>
+        <Button onClick={ok != true ? watermarkHandler : removeImageHandler}>{ok != true ? "Upload" : "Reset"}</Button>
       </div>
     </form>
   );

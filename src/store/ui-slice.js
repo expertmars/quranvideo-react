@@ -16,16 +16,18 @@ const uiSlice = createSlice({
   name: "ui",
   initialState: uiInitialState,
   reducers: {
-    // GenerateForm.js - UI Actions
+    // ChooseVideoCard.js - UI Actions
     showFileChoose(state, action) {
       state.fileChooseIsVisible = true;
       state.chooseVideoIsVisible = true;
     },
     hideFileChoose(state, action) {
       state.fileChooseIsVisible = false;
+      state.chooseVideoIsVisible = false;
+      state.choosePhotoIsVisible = false;
     },
 
-    // ChooseVideoCard.js - UI Actions
+    // ChooseVideoCard.js - Tab State
     showChooseVideo(state, action) {
       state.chooseVideoIsVisible = true;
     },

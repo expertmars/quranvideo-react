@@ -8,6 +8,11 @@ import ProgressModal from "./ProgressModal";
 import CustomAudioModal from "./CustomAudioModal";
 import { fetchAyah, fetchTranslationList, fetchGoogleFonts } from "../../store/generate-actions";
 import AyahEditorModal from "./AyahEditorModal";
+import GlobalStyle from "./GlobalStyle";
+
+import classes from "./GenerateForm.module.scss";
+
+import Logo from "../assets/logo-white.png";
 
 import {
   fetchImageData,
@@ -31,7 +36,7 @@ const GenerateForm = () => {
     arabicFont: 1,
     layout: 1,
     recitor: 7,
-    resolution: "720x1080",
+    resolution: "0",
     showArabic: true,
     showEnglishMeaning: true,
     showTranslation: true,
@@ -109,6 +114,8 @@ const GenerateForm = () => {
 
   const generateForm = useSelector((state) => state.generate.generateForm);
 
+  const [mediaIsTouched, setMediaIsTouched] = useState(false);
+
   // Choose Video Modal Handling
   const showChooseFile = () => {
     if (ayahEditor.length < 1) {
@@ -123,6 +130,8 @@ const GenerateForm = () => {
       return;
     }
     console.log("USING ALREADY FGETCHED AYAH DATA");
+    setMediaIsTouched(true);
+    console.log(mediaIsTouched);
 
     dispatch(uiActions.showFileChoose());
   };
@@ -253,15 +262,34 @@ const GenerateForm = () => {
         <div className="col-1-of-4">
           <FreeEditorForm
             formChooseFileHandler={showChooseFile}
+            mediaIsTouched={mediaIsTouched}
             onChangeHandler={inputChangeHandler}
             formData={formData}
           />
         </div>
-        <div className="col-2-of-4"></div>
+        <div className="col-2-of-4">
+          <div className="content">
+            <p className="ayah">{true ? "ﱁ ﱂ ﱃ ﱄ ﱅ" : ayahEditor[0].arab}</p>
+            <p className="mala">
+              {true ? "പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തില്‍." : ayahEditor[0].local}
+            </p>
+            <p className="eng">
+              {true ? "In the Name of Allah, the Most Gracious, the Most Merciful" : ayahEditor[0].eng}
+            </p>
+          </div>
+          <div className="foot">
+            <img src={`https://api.qurancliphelper.com/titles/${formData.surahName}`} className="title" />
+            <p className="number">
+              QURAN {formData.fromAyah} - {formData.toAyah}
+            </p>
+            <img src={Logo} className="plogo" />
+          </div>
+        </div>
         <div className="col-1-of-4">
           <ProEditorForm onChangeHandler={inputChangeHandler} />
         </div>
       </div>
+      <GlobalStyle />
     </React.Fragment>
   );
 };

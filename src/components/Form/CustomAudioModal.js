@@ -11,6 +11,9 @@ import { generateActions } from "../../store/generate-slice";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 
+import classes from "./CustomAudioModal.module.scss";
+import Button from "../UI/Button";
+
 const CustomAudioModal = (props) => {
   const dispatch = useDispatch();
 
@@ -113,15 +116,15 @@ const CustomAudioModal = (props) => {
 
   return (
     <>
-      <Modal modalClass="progresspopup ayahEditorPopup" onClose={props.onClose}>
+      <Modal modalClass={classes["custom-audio__popup"]} onClose={props.onClose}>
         <div>
           <h2>You need select a audio with {ayahCount + 1} ayahs to split</h2>
-          <form className="progressBox">
+          <form className={classes["form-choose"]}>
             {error !== null && <p>{error}</p>}
             <label htmlFor="uploadaudio">Upload .mp3 File</label>
             <input
               type="file"
-              className="form-input-file"
+              className={classes["form-input-file"]}
               name="uploadaudio"
               id="uploadaudio"
               // value={uploadAudioValue}
@@ -130,18 +133,18 @@ const CustomAudioModal = (props) => {
           </form>{" "}
           <h1>Player</h1>
           {url != null && (
-            <div className="ayahPlayer">
-              <div className="slider">
-                <div className="markerdiv">
+            <div className={classes.ayahPlayer}>
+              <div className={classes.slider}>
+                <div className={classes.markerdiv}>
                   {splitTimes.map((splittime) => (
-                    <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}>
+                    <div className={classes.marker} style={{ left: (splittime / totalDuration) * 100 + "%" }}>
                       {splittime.toFixed(2)}s
                     </div>
                   ))}
                 </div>
                 <input
                   type="range"
-                  className="audioslider"
+                  className={classes.audioslider}
                   min="0"
                   max={totalDuration * 10}
                   onChange={rangeChangeHandler}
@@ -150,7 +153,7 @@ const CustomAudioModal = (props) => {
               </div>
 
               <ReactAudioPlayer
-                className="react-player"
+                className={classes["react-player"]}
                 id="myAudio"
                 src={url}
                 onListen={onPlayHandler}
@@ -163,25 +166,13 @@ const CustomAudioModal = (props) => {
                 // hidden
               />
 
-              <button className="btn" onClick={isPlaying ? pauseAudio : playAudio}>
-                {isPlaying ? "Pause" : "Play"}
-              </button>
-              {splitTimes.length < ayahCount && (
-                <button className="btn" onClick={onSplit}>
-                  Split
-                </button>
-              )}
-              {splitTimes.length > 0 && (
-                <button className="btn" onClick={resetSplit}>
-                  Reset All Split
-                </button>
-              )}
+              <Button onClick={isPlaying ? pauseAudio : playAudio}>{isPlaying ? "Pause" : "Play"}</Button>
+              {splitTimes.length < ayahCount && <Button onClick={onSplit}>Split</Button>}
+              {splitTimes.length > 0 && <Button onClick={resetSplit}>Reset All Split</Button>}
               <br />
               {splitTimes.length >= ayahCount && (
                 <div>
-                  <button className="btn" onClick={submitHandler}>
-                    Submit
-                  </button>
+                  <Button onClick={submitHandler}>Submit</Button>
                 </div>
               )}
             </div>

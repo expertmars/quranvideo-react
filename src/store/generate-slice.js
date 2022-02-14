@@ -7,6 +7,7 @@ const generateSlice = createSlice({
     // GenerateForm
     generateForm: [],
     submissionButton: false,
+    formIsValid: false,
 
     // Edit Button
     editForm: [{ recitor: 7, surahName: 1, fromAyah: 1, toAyah: 3, localTranslation: 37, englishTranslation: 203 }],
@@ -29,7 +30,6 @@ const generateSlice = createSlice({
     generatedRecitors: [],
 
     //Logo / watermark
-
     customLogo: false,
     customAudio: false,
 
@@ -115,9 +115,15 @@ const generateSlice = createSlice({
         ayahEditor: state.ayahEditor,
         customLogo: state.customLogo,
         customAudio: state.customAudio,
+        isAyahwise: state.isAyahwise,
       };
       state.generateForm = [formItems, state.selectedMedia];
       state.submissionButton = false;
+    },
+
+    updateFormValidation(state, action) {
+      const status = action.payload.status;
+      state.formIsValid = status;
     },
 
     // Edit Button
@@ -345,6 +351,12 @@ const generateSlice = createSlice({
     addPhotoToList(state, action) {
       const targetPhoto = action.payload;
       const preparedData = { ...targetPhoto, type: "photo" };
+      state.selectedMedia = state.selectedMedia.concat(preparedData);
+    },
+
+    addCustomMediaToList(state, action) {
+      const targetPhoto = action.payload;
+      const preparedData = { ...targetPhoto, type: "custom" };
       state.selectedMedia = state.selectedMedia.concat(preparedData);
     },
 

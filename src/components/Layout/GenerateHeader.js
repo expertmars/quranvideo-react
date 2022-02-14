@@ -5,10 +5,13 @@ import { generateActions } from "../../store/generate-slice";
 
 // Assets
 import logoWhite from "../assets/logo-white.png";
+import classes from "./GenerateHeader.module.scss";
+import Button from "../UI/Button";
 
 const GenerateHeader = () => {
   const dispatch = useDispatch();
   const generateForm = useSelector((state) => state.generate.generateForm);
+  const formIsValid = useSelector((state) => state.generate.formIsValid);
 
   const downloadHandler = (e) => {
     e.preventDefault();
@@ -19,24 +22,24 @@ const GenerateHeader = () => {
 
   return (
     <Fragment>
-      <header className="generate-header">
-        <div className="generate-header__logo-box">
-          <img src={logoWhite} alt="Logo" className="generate-header__logo" />
+      <header className={classes["generate-header"]}>
+        <div className={classes["generate-header__logo-box"]}>
+          <img src={logoWhite} alt="Logo" className={classes["generate-header__logo"]} />
         </div>
-        <div className="generate-header__left">
-          <div className="generate-header__user">
+        <div className={classes["generate-header__left"]}>
+          <div className={classes["generate-header__user"]}>
             <div
-              className="generate-header__user-avatar"
+              className={classes["generate-header__user-avatar"]}
               style={{
                 backgroundImage: `url(${userData.avatar})`,
               }}>
               &nbsp; {!userData.avatar && "M"}
             </div>
-            <div className="generate-header__user-text">{userData.email}</div>
+            <div className={classes["generate-header__user-text"]}>{userData.email}</div>
           </div>
-          <a onClick={downloadHandler} href="/" className="generate-header__btn">
+          <Button onClick={downloadHandler} disabled={!formIsValid} btnClass={classes["generate-header__btn"]}>
             Download
-          </a>
+          </Button>
         </div>
       </header>
     </Fragment>

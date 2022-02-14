@@ -1,0 +1,54 @@
+@import "../../sass/main.scss";
+
+.heading {
+  margin-top: 3rem;
+  font-family: "Inter";
+  font-size: 5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.hero__button {
+  width: 25.4rem;
+  height: 5rem;
+  background-color: #44af69;
+  position: relative;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.hero__button--text:visited,
+.hero__button--text:link {
+  color: #000;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  text-decoration: none;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+.hero__button::after {
+  content: "";
+  width: 94%;
+  height: 100%;
+  background-color: #44af69;
+  position: absolute;
+  top: 1rem;
+  -webkit-filter: blur(1.3rem);
+  filter: blur(1.3rem);
+  opacity: 30%;
+  z-index: -9;
+}
+
+.foot {
+  margin-bottom: 2rem;
+  text-align: center;
+  color: gainsboro;
+  font-size: 1.2rem;
+}

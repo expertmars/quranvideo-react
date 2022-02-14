@@ -1,0 +1,35 @@
+.google {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 1.4rem;
+}
+
+.googlebtn {
+  cursor: pointer;
+  background-color: #e8fff0;
+  text-decoration: none;
+  padding: 1.4rem 2rem;
+  border-radius: 1.5rem;
+  color: #44af69;
+  font-weight: bold;
+  transition: all 2s;
+
+  &:hover {
+    background-color: #ffffff;
+
+    color: #327449;
+    transition: all 2s;
+
+    transition-timing-function: linear;
+  }
+}
+
+.logout {
+  padding: 2rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: rgb(160, 11, 11);
+  &:hover {
+    color: rgb(27, 27, 95);
+  }
+}

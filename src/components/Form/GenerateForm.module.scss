@@ -1,0 +1,30 @@
+.editor {
+  width: 100%;
+  margin: 0;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .col-1-of-4 {
+    padding: 4rem 12rem;
+    width: calc((100%) / 4);
+    height: 95vh;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+  .col-2-of-4 {
+    background-color: #000;
+    height: 95vh;
+    width: calc(2 * (100% / 4));
+  }
+}
+.editor[class^="col-"] {
+  float: left;
+}
+
+.previewWindow {
+  background-image: url("https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+  background-size: cover;
+  background: red;
+}

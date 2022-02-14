@@ -3,6 +3,7 @@ import classes from "./Tag.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import { generateActions } from "../../store/generate-slice";
 import { current } from "@reduxjs/toolkit";
+import Button from "./Button";
 
 export default function Tag(props) {
   const dispatch = useDispatch();
@@ -68,9 +69,12 @@ export default function Tag(props) {
   const clickHandler = (e) => {
     // creating an array to push into tag (state)
     let tagArray = [...tags];
+    // console.log(tags);
+    // console.log(e.target.innerHTML);
+    // console.log(e.target.textContent);
 
     // finding the index of clicked tag from tags (state)
-    const index = tagArray.findIndex((tags) => tags === e.target.innerHTML);
+    const index = tagArray.findIndex((tags) => tags === e.target.textContent);
     // finding the clicked text with the help of index.
     const tagFind = tagArray.find((tag) => tags.indexOf(tag) === index);
 
@@ -83,8 +87,8 @@ export default function Tag(props) {
     // setTags(tagArray);
     setEditing(index);
 
-    console.log(tagFind);
-    setValueTags(e.target.innerHTML);
+    // console.log(tagFind);
+    setValueTags(e.target.textContent);
   };
 
   const onUnFocusHandler = () => {
@@ -233,16 +237,8 @@ export default function Tag(props) {
       </div>
 
       <div>
-        {isSplitAvailable && (
-          <button className={"btn"} onClick={splitHandler}>
-            Split At Caret
-          </button>
-        )}
-        {isSplitAvailable && (
-          <button className={"btn"} onClick={resetHandler}>
-            Undo Split
-          </button>
-        )}
+        {isSplitAvailable && <Button onClick={splitHandler}>Split At Caret</Button>}
+        {isSplitAvailable && <Button onClick={resetHandler}>Undo Split</Button>}
       </div>
     </>
   );

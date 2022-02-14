@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
+import classes from "./ProgressModal.module.scss";
+
 const ProgressModal = (props) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
@@ -40,10 +42,10 @@ const ProgressModal = (props) => {
   };
 
   return (
-    <Modal modalClass={"progresspopup"} onClose={onCloseHandler}>
-      <div className="progressBox">
-        <h4 className="progressBox__text">{status}</h4>
-        <div className="progressBar">
+    <Modal modalClass={classes.progress__popup} onClose={onCloseHandler}>
+      <div className={classes.progressBox}>
+        <h4 className={classes.progressBox__text}>{status}</h4>
+        <div className={classes.progressBar}>
           <ProgressBar
             variant={now === 0 ? "warning" : "success"}
             animated

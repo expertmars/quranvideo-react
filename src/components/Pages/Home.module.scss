@@ -1,0 +1,103 @@
+@import "../../sass/main.scss";
+
+.sectionHero {
+  padding: 0rem 0;
+  height: 90vh;
+  padding: 15rem 0;
+}
+
+.hero__heading {
+  width: 100%;
+}
+
+.hero__heading--main {
+  font-size: 10rem;
+  line-height: 1;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: -4px;
+}
+
+.hero__heading--sub {
+  font-size: 2.025rem;
+  line-height: 3.2rem;
+  text-align: center;
+  font-weight: 400;
+  color: #666666;
+}
+
+.hero__button {
+  width: 25.4rem;
+  height: 5rem;
+  background-color: #44af69;
+  position: relative;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.hero__button--text:visited,
+.hero__button--text:link {
+  color: #000;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  text-decoration: none;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+.hero__button::after {
+  content: "";
+  width: 94%;
+  height: 100%;
+  background-color: #44af69;
+  position: absolute;
+  top: 1rem;
+  -webkit-filter: blur(1.3rem);
+  filter: blur(1.3rem);
+  opacity: 30%;
+  z-index: -9;
+}
+
+.info__box {
+  max-width: 77rem;
+  height: 9rem;
+  background-color: #f6f6f6;
+  border: 1px solid rgba(102, 102, 102, 0.1);
+  border-radius: 10px;
+  margin: auto;
+  font-size: 0;
+  position: relative;
+  @include respond(phone) {
+    display: none;
+  }
+}
+
+.info__icons {
+  display: inline-block;
+}
+
+.info__img {
+  width: 14rem;
+  height: auto;
+  margin: 2.4rem 0 2.4rem 2.4rem;
+  display: inline-block;
+}
+
+.info__text {
+  font-size: 1.6rem;
+  color: #666666;
+  width: 40.5rem;
+  position: absolute;
+  top: 50%;
+  left: 73.2%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  text-align: left;
+}

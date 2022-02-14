@@ -8,6 +8,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import { useEffect } from "react";
 
+import classes from "./ChooseVideoCard.module.scss";
+
 const ChooseVideoCard = (props) => {
   const dispatch = useDispatch();
 
@@ -29,6 +31,8 @@ const ChooseVideoCard = (props) => {
 
   const totalDuration = useSelector((state) => state.generate.totalDuration);
   const ayahEditor = useSelector((state) => state.generate.ayahEditor);
+
+  const [err, setErr] = useState();
 
   console.log(selectedMedia);
 
@@ -163,24 +167,34 @@ const ChooseVideoCard = (props) => {
 
       let formData = new FormData();
       formData.append("uid", uid);
+
       for (let i = 0; i < files.length; i++) {
         formData.append("video", files[i]);
       }
 
-      axios.post(BACKEND_URL + "/upload-video", formData).then((res) => {
-        if (res.status === 200) {
-          res.data.map((data, index) => {
-            let upfile = {
-              id: index,
-              duration: data.duration,
-              thumbnail: "https://dummyimage.com/16:9x1080&text=Video",
-              videoURL: BACKEND_URL + "/" + data.destination + "/" + data.filename,
-            };
-            dispatch(generateActions.addVideoToList(upfile));
-          });
+      axios.post(BACKEND_URL + "/upload-video", formData).then(
+        (res) => {
+          if (res.status === 200) {
+            res.data.map((data, index) => {
+              let upfile = {
+                id: index,
+                duration: data.duration,
+                thumbnail: "https://dummyimage.com/16:9x1080&text=Video",
+                videoURL: BACKEND_URL + "/" + data.destination + "/" + data.filename,
+              };
+              dispatch(generateActions.addCustomMediaToList(upfile));
+            });
+          }
+        },
+        (err) => {
+          setErr(err.response.statusText);
         }
-      });
+      );
     }
+  };
+
+  const clearErrorHandler = () => {
+    setErr();
   };
 
   // Ayahwise Active Class Styling
@@ -196,18 +210,18 @@ const ChooseVideoCard = (props) => {
   }, []);
 
   return (
-    <Modal onClose={props.onClose} modalClass={"videopopup"}>
-      <div className="videopopup__row">
+    <Modal onClose={props.onClose} modalClass={classes.videopopup}>
+      <div className={classes.videopopup__row}>
         <a
           href="#"
           onClick={chooseVideoClickHandler}
-          className={`videopopup__tab ${showChooseVideo && `videopopup__tab--active`}`}>
+          className={`${classes.videopopup__tab} ${showChooseVideo && classes["videopopup__tab--active"]}`}>
           Choose Video
         </a>
         <a
           href="#"
           onClick={choosePhotoClickHandler}
-          className={`videopopup__tab ${showChoosePhoto && `videopopup__tab--active`}`}>
+          className={`${classes.videopopup__tab} ${showChoosePhoto && classes["videopopup__tab--active"]}`}>
           Choose Photo
         </a>
         <input
@@ -218,29 +232,35 @@ const ChooseVideoCard = (props) => {
           onChange={chooseFileChangeHandler}
           ref={fileInputRef}
         />
-        <a href="#" onClick={chooseFileClickHandler} className="videopopup__tab">
+        <a href="#" onClick={chooseFileClickHandler} className={classes.videopopup__tab}>
           Upload Video / Photo
         </a>
-        <a href="#" onClick={props.onClose} className="videopopup__close">
+        <a href="#" onClick={props.onClose} className={classes.videopopup__close}>
           <img src="https://i.imgur.com/v7wuPPh.png" alt="videoPopup_close" />
         </a>
+        {err && (
+          <div className={classes.err} onClick={clearErrorHandler}>
+            {err}
+            <img src="https://i.imgur.com/v7wuPPh.png" className={classes.errClose} />
+          </div>
+        )}
       </div>
-      <div className="videopopup__row">
+      <div className={classes.videopopup__row}>
         <p
           href="#"
-          className={`${"videopopup__tab"} ${isAyahwise && "videopopup__tab--active"}`}
+          className={`${classes.videopopup__tab} ${isAyahwise && classes["videopopup__tab--active"]}`}
           onClick={(e) => dispatch(generateActions.updateAudiowise({ status: true }))}>
           Ayahwise
         </p>
         <p
           href="#"
-          className={`${"videopopup__tab"} ${!isAyahwise && "videopopup__tab--active"}`}
+          className={`${classes.videopopup__tab} ${!isAyahwise && classes["videopopup__tab--active"]}`}
           onClick={(e) => dispatch(generateActions.updateAudiowise({ status: false }))}>
           Lengthwise
         </p>
       </div>
-      <div className="videopopup__row">
-        <img src="https://i.imgur.com/s3KmYLP.png" alt="videoPopup_row" className="videopopup__searchicon" />
+      <div className={classes.videopopup__row}>
+        <img src="https://i.imgur.com/s3KmYLP.png" alt="videoPopup_row" className={classes.videopopup__searchicon} />
         <input
           type="text"
           onKeyDown={(e) => {
@@ -248,12 +268,12 @@ const ChooseVideoCard = (props) => {
             showChoosePhoto && searchImage(e);
           }}
           placeholder="Search assets"
-          className="videopopup__search"
+          className={classes.videopopup__search}
         />
       </div>
-      <div className="videopopup__row">
+      <div className={classes.videopopup__row}>
         {showChooseVideo && (
-          <div className="videopopup__row-grid">
+          <div className={classes["videopopup__row-grid"]}>
             <InfiniteScroll
               dataLength={generatedVideos.length}
               next={() => dispatch(generateActions.updateVideoPage())}
@@ -262,11 +282,11 @@ const ChooseVideoCard = (props) => {
               height={360}
               scrollThreshold="200px"
               scrollableTarget="row">
-              <div className="row">
-                <div className="column">
+              <div className={classes.row}>
+                <div className={classes.column}>
                   {videoCol1.map((videoArray) => (
                     <>
-                      <div className="content-box">
+                      <div className={classes["content-box"]}>
                         <video
                           onMouseOver={mouseOverHandler}
                           onMouseOut={mouseOutHandler}
@@ -281,10 +301,10 @@ const ChooseVideoCard = (props) => {
                   ))}
                 </div>
 
-                <div className="column">
+                <div className={classes.column}>
                   {videoCol2.map((videoArray) => (
                     <>
-                      <div className="content-box">
+                      <div className={classes["content-box"]}>
                         <video
                           onMouseOver={mouseOverHandler}
                           onMouseOut={mouseOutHandler}
@@ -299,10 +319,10 @@ const ChooseVideoCard = (props) => {
                   ))}
                 </div>
 
-                <div className="column">
+                <div className={classes.column}>
                   {videoCol3.map((videoArray) => (
                     <>
-                      <div className="content-box">
+                      <div className={classes["content-box"]}>
                         <video
                           onMouseOver={mouseOverHandler}
                           onMouseOut={mouseOutHandler}
@@ -323,7 +343,7 @@ const ChooseVideoCard = (props) => {
 
         {/* Choose Photos Section */}
         {showChoosePhoto && (
-          <div className="videopopup__row-grid">
+          <div className={classes["videopopup__row-grid"]}>
             <InfiniteScroll
               dataLength={generatedImages.length}
               next={() => dispatch(generateActions.updateImagePage())}
@@ -332,8 +352,8 @@ const ChooseVideoCard = (props) => {
               height={360}
               scrollThreshold="200px"
               scrollableTarget="row">
-              <div className="row">
-                <div className="column">
+              <div className={classes.row}>
+                <div className={classes.column}>
                   {photoCol1.map((imageArray) => (
                     <img
                       src={imageArray.image}
@@ -343,7 +363,7 @@ const ChooseVideoCard = (props) => {
                     />
                   ))}
                 </div>
-                <div className="column">
+                <div className={classes.column}>
                   {photoCol2.map((imageArray) => (
                     <img
                       src={imageArray.image}
@@ -353,7 +373,7 @@ const ChooseVideoCard = (props) => {
                     />
                   ))}
                 </div>
-                <div className="column">
+                <div className={classes.column}>
                   {photoCol3.map((imageArray) => (
                     <img
                       src={imageArray.image}
@@ -369,21 +389,26 @@ const ChooseVideoCard = (props) => {
         )}
         {/* Choose Photos Section - END */}
       </div>
-      <div className="videopopup__row">
-        <div class="selectedvideo">
+      <div className={classes.videopopup__row}>
+        <div className={classes.selectedvideo}>
           {selectedMedia.map((eachMedia, index) => {
             if (eachMedia.image)
               return (
-                <div className="selectedvideo__box">
-                  <img src={eachMedia.image} key={eachMedia.id} alt={eachMedia.id} className="selectedvideo__thumb" />
-                  <div className="selectedvideo__left">
-                    <h3 className="selectedvideo__name">{photoMediaName(eachMedia)}</h3>
-                    <p className="selectedvideo__len">00:00</p>
+                <div className={classes.selectedvideo__box}>
+                  <img
+                    src={eachMedia.image}
+                    key={eachMedia.id}
+                    alt={eachMedia.id}
+                    className={classes.selectedvideo__thumb}
+                  />
+                  <div className={classes.selectedvideo__left}>
+                    <h3 className={classes.selectedvideo__name}>{photoMediaName(eachMedia)}</h3>
+                    <p className={classes.selectedvideo__len}>00:00</p>
                   </div>
                   <img
                     src="https://i.imgur.com/v7wuPPh.png"
                     alt="selectedvideo__images"
-                    className="selectedvideo__del"
+                    className={classes.selectedvideo__del}
                     onClick={() => dispatch(generateActions.removeVideoFromList(eachMedia))}
                   />
                 </div>
@@ -391,32 +416,36 @@ const ChooseVideoCard = (props) => {
 
             if (eachMedia.thumbnail)
               return (
-                <div className="selectedvideo__box">
-                  <img src={eachMedia.thumbnail} alt="videoPopup_video" className="selectedvideo__thumb" />
-                  <div className="selectedvideo__left">
-                    <h3 className="selectedvideo__name">{index + 1}</h3>
-                    <p className="selectedvideo__len">{timeConvert(eachMedia.duration)}</p>
+                <div className={classes.selectedvideo__box}>
+                  <img src={eachMedia.thumbnail} alt="videoPopup_video" className={classes.selectedvideo__thumb} />
+                  <div className={classes.selectedvideo__left}>
+                    <h3 className={classes.selectedvideo__name}>{index + 1}</h3>
+                    <p className={classes.selectedvideo__len}>{timeConvert(eachMedia.duration)}</p>
                   </div>
                   <img
                     src="https://i.imgur.com/v7wuPPh.png"
                     alt="selectedvideo__videos"
-                    className="selectedvideo__del"
+                    className={classes.selectedvideo__del}
                     onClick={() => dispatch(generateActions.removeVideoFromList(eachMedia))}
                   />
                 </div>
               );
           })}
         </div>
-        <div className="videopopup__timeinfo">
-          <span className="videopopup__current-time">{timeConvert(totalDuration)}</span>
-          <span className="videopopup__remaining-time"> / {timeConvert(audioDuration)}</span>
+        <div className={classes.videopopup__timeinfo}>
+          <span className={classes["videopopup__current-time"]}>{timeConvert(totalDuration)}</span>
+          <span className={classes["videopopup__remaining-time"]}> / {timeConvert(audioDuration)}</span>
         </div>
       </div>
-      <div className="videopopup__row">
-        <p className="videopopup__info">
-          <img className="videopopup__info-icon" alt="videoPopup_video" src="https://i.imgur.com/iKsTavG.png" /> The
-          time shows the total video length out of total audio length. If time exceeded it will automatically cropped to
-          that limit.
+      <div className={classes.videopopup__row}>
+        <p className={classes.videopopup__info}>
+          <img
+            className={classes["videopopup__info-icon"]}
+            alt="videoPopup_video"
+            src="https://i.imgur.com/iKsTavG.png"
+          />{" "}
+          The time shows the total video length out of total audio length. If time exceeded it will automatically
+          cropped to that limit.
         </p>
       </div>
     </Modal>

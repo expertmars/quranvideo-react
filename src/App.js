@@ -9,6 +9,7 @@ import SignInPage from "./components/Pages/SignIn";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import Contribute from "./components/Pages/Contribute";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const App = () => {
     <Fragment>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/contribute" element={<Contribute />} />
         <Route path="/generate" element={<Generate />} />
         <Route path="/sign-in" element={<SignInPage />} />
       </Routes>

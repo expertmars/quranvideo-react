@@ -10,8 +10,10 @@ import Loading from "../UI/Loading";
 import GlobalStyle from "./GlobalStyle";
 
 import Tag from "../UI/Tag";
+import classes from "./AyahEditorModal.module.scss";
 
 import { generateActions } from "../../store/generate-slice";
+import Button from "../UI/Button";
 
 const AyahEditorModal = (props) => {
   const dispatch = useDispatch();
@@ -56,7 +58,7 @@ const AyahEditorModal = (props) => {
   let index = 0;
   for (let i = fromAyah; i <= toAyah; i++) {
     optionsList.push(
-      <option value={i} id={index} key={i} className="form-list-item">
+      <option value={i} id={index} key={i} className={classes["form-list-item"]}>
         {i}
       </option>
     );
@@ -151,87 +153,78 @@ const AyahEditorModal = (props) => {
     <React.Fragment>
       {/* {<Loading />} */}
 
-      <Modal modalClass={"progresspopup ayahEditorPopup"} onClose={props.onClose}>
-        <div className="progressBox">
-          <h4 className="progressBox__text">AYAH EDITOR</h4>
-          {step === 0 && (
-            <>
-              <div className="form-group">
-                <label htmlFor="ayahNo" className="form-label">
-                  Select the ayah to edit
-                </label>
-                <select
-                  className="form-list"
-                  name="ayahNo"
-                  defaultValue={ayahlist[currentAyahIndex]}
-                  onChange={ayahNoHandler}>
-                  {optionsList}
-                </select>
+      <Modal modalClass={classes["ayah-editor__popup"]} onClose={props.onClose}>
+        <h4 className={classes["ayah-editor__title"]}>AYAH EDITOR</h4>
+        {step === 0 && (
+          <>
+            <div className={classes["form-group"]}>
+              <label htmlFor="ayahNo" className={classes["form-label"]}>
+                Select the ayah to edit
+              </label>
+              <select
+                className={classes["form-list"]}
+                name="ayahNo"
+                defaultValue={ayahlist[currentAyahIndex]}
+                onChange={ayahNoHandler}>
+                {optionsList}
+              </select>
+            </div>
+
+            <div className={classes.ayahPlayer}>
+              <Button onClick={isPlaying ? pauseAudio : playAudio}>{isPlaying ? "Pause" : "Play"}</Button>
+              <Button onClick={onSplit}>Split</Button>
+
+              {splitTimes.length > 0 && <Button onClick={resetSplit}>Reset All Split</Button>}
+              <div className={classes.slider}>
+                {splitTimes && (
+                  <div className={classes.markerdiv}>
+                    {splitTimes.map((splittime) => (
+                      <div className={classes.marker} style={{ left: (splittime / totalDuration) * 100 + "%" }}>
+                        {splittime.toFixed(2)}s
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <input
+                  type="range"
+                  className={classes.audioslider}
+                  min="0"
+                  max={totalDuration * 10}
+                  onChange={rangeChangeHandler}
+                  value={currentDuration * 10}></input>
               </div>
+              {!editingAyah.splitTimes[editingAyah.splitCount] && <p>Current Time: {currentDuration}</p>}
 
-              <div className="ayahPlayer">
-                <button className="btn" onClick={isPlaying ? pauseAudio : playAudio}>
-                  {isPlaying ? "Pause" : "Play"}
-                </button>
-                <button className="btn" onClick={onSplit}>
-                  Split
-                </button>
+              {editingAyah.splitTimes[editingAyah.splitCount] && (
+                <p>Spliting At: {editingAyah.splitTimes[editingAyah.splitCount]}</p>
+              )}
 
-                {splitTimes.length > 0 && (
-                  <button className="btn" onClick={resetSplit}>
-                    Reset All Split
-                  </button>
-                )}
-                <div className="slider">
-                  {splitTimes && (
-                    <div className="markerdiv">
-                      {splitTimes.map((splittime) => (
-                        <div className="marker" style={{ left: (splittime / totalDuration) * 100 + "%" }}>
-                          {splittime.toFixed(2)}s
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <input
-                    type="range"
-                    className="audioslider"
-                    min="0"
-                    max={totalDuration * 10}
-                    onChange={rangeChangeHandler}
-                    value={currentDuration * 10}></input>
-                </div>
-                {!editingAyah.splitTimes[editingAyah.splitCount] && <p>Current Time: {currentDuration}</p>}
-
-                {editingAyah.splitTimes[editingAyah.splitCount] && (
-                  <p>Spliting At: {editingAyah.splitTimes[editingAyah.splitCount]}</p>
-                )}
-
-                {/* <audio
+              {/* <audio
             src="https://upload.wikimedia.org/wikipedia/commons/1/15/Bicycle-bell.wav"
             type="audio/ogg"
             controls
             autoPlay
           /> */}
-                <ReactAudioPlayer
-                  className="react-player"
-                  id="myAudio"
-                  src={editingAyah.audio}
-                  onListen={onPlayHandler}
-                  onPlay={onPlayerPlay}
-                  onPause={onPlayerPause}
-                  listenInterval={10}
-                  autoPlay
-                  onLoadedMetadata={onAudioFileLoaded}
-                  controls
-                  hidden
-                />
-              </div>
-            </>
-          )}
+              <ReactAudioPlayer
+                className={classes["react-player"]}
+                id="myAudio"
+                src={editingAyah.audio}
+                onListen={onPlayHandler}
+                onPlay={onPlayerPlay}
+                onPause={onPlayerPause}
+                listenInterval={10}
+                autoPlay
+                onLoadedMetadata={onAudioFileLoaded}
+                controls
+                hidden
+              />
+            </div>
+          </>
+        )}
 
-          {/* ============================================================================================ */}
-          {/* ============================
+        {/* ============================================================================================ */}
+        {/* ============================
           
           arab = [
             ['aya','h 1'],
@@ -241,68 +234,61 @@ const AyahEditorModal = (props) => {
           ]
           
           ====================================== */}
-          {/* ============================================================================================ */}
+        {/* ============================================================================================ */}
 
-          <div>
-            {step === 1 && (
-              <>
-                <h3>Arabic</h3>
-                <Tag
-                  defaultTags={editingAyah.arab}
-                  lastTags={lastTags}
-                  page={pagenum}
-                  arabic={true}
-                  currentIndex={currentAyahIndex}
-                  mode="arab"
-                  splits={splitTimes}
-                  splitCount={editingAyah.splitCount}
-                />
-              </>
-            )}
+        <div>
+          {step === 1 && (
+            <>
+              <h3>Arabic</h3>
+              <Tag
+                defaultTags={editingAyah.arab}
+                lastTags={lastTags}
+                page={pagenum}
+                arabic={true}
+                currentIndex={currentAyahIndex}
+                mode="arab"
+                splits={splitTimes}
+                splitCount={editingAyah.splitCount}
+              />
+            </>
+          )}
 
-            {step === 2 && (
-              <>
-                <h3>English</h3>
+          {step === 2 && (
+            <>
+              <h3>English</h3>
 
-                <Tag
-                  defaultTags={editingAyah.eng}
-                  lastTags={lastTags}
-                  arabic={false}
-                  currentIndex={currentAyahIndex}
-                  mode="english"
-                  splits={splitTimes}
-                  splitCount={editingAyah.splitCount}
-                />
-              </>
-            )}
+              <Tag
+                defaultTags={editingAyah.eng}
+                lastTags={lastTags}
+                arabic={false}
+                currentIndex={currentAyahIndex}
+                mode="english"
+                splits={splitTimes}
+                splitCount={editingAyah.splitCount}
+              />
+            </>
+          )}
 
-            {step === 3 && (
-              <>
-                <h3>Local Language</h3>
-                <Tag
-                  defaultTags={editingAyah.local}
-                  lastTags={lastTags}
-                  currentIndex={currentAyahIndex}
-                  arabic={false}
-                  mode="local"
-                  splits={splitTimes}
-                  splitCount={editingAyah.splitCount}
-                />
-              </>
-            )}
-            {editingAyah.splitTimes[editingAyah.splitCount] && (
-              <>
-                {step >= 1 && (
-                  <button className="btn" onClick={onPreviousStepHandler}>
-                    Back
-                  </button>
-                )}
-                <button className="btn" onClick={onNextStepHandler}>
-                  {step === 3 ? "Finish" : "Next"}
-                </button>
-              </>
-            )}
-          </div>
+          {step === 3 && (
+            <>
+              <h3>Local Language</h3>
+              <Tag
+                defaultTags={editingAyah.local}
+                lastTags={lastTags}
+                currentIndex={currentAyahIndex}
+                arabic={false}
+                mode="local"
+                splits={splitTimes}
+                splitCount={editingAyah.splitCount}
+              />
+            </>
+          )}
+          {editingAyah.splitTimes[editingAyah.splitCount] && (
+            <>
+              {step >= 1 && <Button onClick={onPreviousStepHandler}>Back</Button>}
+              <Button onClick={onNextStepHandler}>{step === 3 ? "Finish" : "Next"}</Button>
+            </>
+          )}
         </div>
       </Modal>
       <GlobalStyle />
