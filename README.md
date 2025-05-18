@@ -38,7 +38,7 @@ It was an early attempt to simplify high-quality Quran video creation, mainly fo
 
 ## 🖼️ UI Preview (Legacy)
 
-*(If you have any screenshots from the old website, you can include them here)*
+![Group 83 (1)](https://github.com/user-attachments/assets/c348520a-441e-4b09-8b6b-d8227c08e960)
 
 ---
 
