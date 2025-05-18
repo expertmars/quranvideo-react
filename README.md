@@ -1,70 +1,108 @@
-# Getting Started with Create React App
+> ⚠️ **Notice: This Website Version is Discontinued**  
+> This website implementation of Quran Video Creator is no longer maintained.  
+> A new **cross-platform app** has been developed instead, offering a much better experience.  
+> 👉 Check out the app version here: [Quran Video Creator App](https://github.com/expertmars/quranvideoapp)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 📸 Quran Video Maker — Legacy Website
 
-## Available Scripts
+An early version of a tool designed to let users generate Quran recitation videos effortlessly — with options to select Surah, Qari, Ayah range, and apply custom text styles for both Arabic and translated verses.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📖 Original Purpose
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This website was created to:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Let users select a **Surah** and **Ayah range**
+- Choose a **Qari (reciter)** from a list of supported voices
+- Display Arabic text in different fonts/styles
+- Add translated text in languages like English, Urdu, Malayalam, etc.
+- Render a synchronized video where recitation matches the displayed text
 
-### `npm test`
+It was an early attempt to simplify high-quality Quran video creation, mainly for Islamic content creators, students, and educators.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## ❌ Why It Was Discontinued
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- The web version had **technical limitations** (especially with real-time video rendering and audio/text sync in the browser).
+- We decided to move to a **dedicated application (desktop/mobile)** that offers:
+  - Better performance
+  - More design flexibility
+  - Export presets for social media
+  - Seamless rendering using FFmpeg under the hood
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> **The new app offers everything this site aimed to do — and more.**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🖼️ UI Preview (Legacy)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+*(If you have any screenshots from the old website, you can include them here)*
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🚀 How It Worked (Legacy Flow)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. **User selected Surah, Ayah range, and Qari**
+2. **Chose Arabic text style and translation language**
+3. **Clicked 'Generate Video'**
+4. The system would render a basic video with synchronized audio and verse display
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧱 Tech Stack (Legacy)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Frontend**: HTML, CSS, JavaScript (React)
+- **Backend**: Node.js
+- **Media**: Basic audio stitching + text rendering logic
+- **Fonts**: Quranic fonts like Amiri, Scheherazade, and Noto Naskh Arabic
+- **APIs**: Quran.com
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🗃️ File Structure
 
-### Analyzing the Bundle Size
+```bash
+quranvideomaker/
+├── public/            # Fonts, static assets
+├── src/
+│   ├── components/    # UI elements (buttons, input, etc.)
+│   ├── pages/         # Views like Home, Generate
+│   ├── utils/         # Verse parser, sync helpers
+│   └── styles/        # Custom CSS or Tailwind
+└── server/            # Backend logic (if any)
+````
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 📦 Project Status
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Discontinued**
+This repository is no longer being updated.
+You're welcome to fork it, learn from it, or repurpose the code.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 📲 What’s Next
 
-### Deployment
+We’ve moved forward with a fully featured **Quran Video Creator app**
+If you're interested in getting updates on the app or contributing to it:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+📧 Contact: \[[Muneer Malik](mailto:armuneermalik@gmail.com)]
+🔗 App Repo: `https://github.com/expertmars/quranvideoapp`
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📜 License
+
+This code is released under the MIT License — you're free to reuse and build upon it with attribution.
+
+---
+
+## 🤍 Final Note
+
+This site laid the foundation for a better, more powerful tool.
+Thanks to everyone who supported it — the journey continues with the app. ✨
+
+> *"So remind, if the reminder should benefit."* — \[Qur’an 87:9]
